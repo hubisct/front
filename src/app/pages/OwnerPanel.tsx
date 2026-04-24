@@ -248,19 +248,50 @@ function EnterpriseEditForm({
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const [emailError, setEmailError] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
 
   return (
     <div className="space-y-4">
-      <Field label="Nome do empreendimento">
-        <input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
-      </Field>
-      <Field label="Categoria">
+        <Field label="Nome do empreendimento *">
+          <input
+            className={inputCls}
+            value={form.name}
+            onChange={(e) => set("name", e.target.value)}
+            onBlur={() => {
+              if (!form.name) setNameError("Campo obrigatório");
+              else setNameError("");
+            }}
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          />
+          {nameError && (
+            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+              {nameError}
+            </p>
+          )}
+        </Field>
+      <Field label="Categoria *">
           <select className={inputCls} value={form.category} onChange={(e) => set("category", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }}>
           {categories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </Field>
-      <Field label="Descrição curta">
-        <textarea className={inputCls} value={form.description} onChange={(e) => set("description", e.target.value)} rows={2} style={{ fontFamily: "Nunito, sans-serif" }} />
+      <Field label="Descrição curta *">
+        <textarea
+          className={inputCls}
+          value={form.description}
+          onChange={(e) => set("description", e.target.value)}
+          onBlur={() => {
+            if (!form.description) setDescriptionError("Campo obrigatório");
+            else setDescriptionError("");
+          }}
+          rows={2}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
+        {descriptionError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {descriptionError}
+          </p>
+        )}
       </Field>
       <Field label="Descrição completa">
         <textarea className={inputCls} value={form.fullDescription} onChange={(e) => set("fullDescription", e.target.value)} rows={3} style={{ fontFamily: "Nunito, sans-serif" }} />
