@@ -1,10 +1,14 @@
 export type Category = "Artesanato" | "Alimentação" | "Moda" | "Plantas" | "Cosmética" | "Reciclagem";
+export type ProductPriceMode = "single" | "range" | "hidden";
 
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
+  priceMode?: ProductPriceMode;
+  priceMin?: number;
+  priceMax?: number;
   image: string;
 }
 

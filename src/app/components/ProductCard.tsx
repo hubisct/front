@@ -1,5 +1,6 @@
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "../types";
+import { getProductPriceLabel } from "../utils/pricing";
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +13,7 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
     `Olá! Vi o produto "${product.name}" da ${enterpriseName} na Vitrine Social da Incubadora UFSM e tenho interesse. Pode me dar mais informações?`
   );
   const whatsappUrl = `https://wa.me/${whatsapp}?text=${whatsappMessage}`;
+  const priceLabel = getProductPriceLabel(product);
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col group">
@@ -24,12 +26,14 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {/* Price badge */}
-        <div
-          className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-white text-sm shadow-lg"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif", fontWeight: 800 }}
-        >
-          R$ {product.price.toFixed(2).replace(".", ",")}
-        </div>
+        {priceLabel && (
+          <div
+            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-white text-sm shadow-lg"
+            style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif", fontWeight: 800 }}
+          >
+            {priceLabel}
+          </div>
+        )}
       </div>
 
       {/* Content */}
