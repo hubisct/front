@@ -181,8 +181,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateUser = async (id: string, data: Partial<User>) => {
     try {
-      // frontend-only optimistic update: server update endpoint not implemented
-      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...data } : u)));
+      const res = await api.updateUser(id, data);
+      setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...res } : u)));
+      return res;
     } catch (err) {
       console.error(err);
     }
@@ -190,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const removeUser = async (id: string) => {
     try {
-      // no delete user endpoint implemented server-side; optimistic update
+      await api.deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
       console.error(err);

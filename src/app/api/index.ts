@@ -60,6 +60,16 @@ export async function createUser(payload: Partial<User>) {
   return res.data;
 }
 
+export async function updateUser(id: string, payload: Partial<User>) {
+  const res = await client.put(`/users/${id}`, payload);
+  return res.data;
+}
+
+export async function deleteUser(id: string) {
+  const res = await client.delete(`/users/${id}`);
+  return res.data;
+}
+
 export async function login(email: string, password: string) {
   const res = await client.post(`/login`, { email, password });
   return res.data;
