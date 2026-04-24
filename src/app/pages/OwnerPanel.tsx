@@ -17,6 +17,7 @@ import { useAuth } from "../contexts/AuthContext";
 import type { Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageUploadField } from "../components/ImageUploadField";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
 
@@ -161,14 +162,8 @@ function ProductForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
       </Field>
-      <Field label="URL da imagem">
-        <input
-          className={inputCls}
-          value={form.image}
-          onChange={(e) => set("image", e.target.value)}
-          placeholder="https://..."
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        />
+      <Field label="Imagem do produto">
+        <ImageUploadField value={form.image} onChange={(value) => set("image", value)} />
       </Field>
       <div className="flex gap-3 pt-2">
         <button
@@ -238,8 +233,15 @@ function EnterpriseEditForm({
       <Field label="Descrição completa">
         <textarea className={inputCls} value={form.fullDescription} onChange={(e) => set("fullDescription", e.target.value)} rows={3} style={{ fontFamily: "Nunito, sans-serif" }} />
       </Field>
-      <Field label="URL da imagem">
-        <input className={inputCls} value={form.coverImage} onChange={(e) => set("coverImage", e.target.value)} placeholder="https://..." style={{ fontFamily: "Nunito, sans-serif" }} />
+      <Field label="Imagem de capa">
+        <ImageUploadField
+          value={form.coverImage}
+          onChange={(value) => set("coverImage", value)}
+          ariaLabel="Area de upload da imagem de capa do empreendimento"
+          emptyTitle="Arraste e solte a imagem de capa aqui"
+          previewAlt="Preview da imagem de capa do empreendimento"
+          buttonLabel="Carregar imagem de capa"
+        />
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="WhatsApp">
