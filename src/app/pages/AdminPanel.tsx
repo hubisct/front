@@ -26,6 +26,7 @@ import type { Enterprise, Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
+import { isValidEmail, isValidPassword, isValidBrazilPhone } from "../utils/validation";
 
 type Tab = "dashboard" | "enterprises" | "users";
 
@@ -121,10 +122,34 @@ function EnterpriseForm({
     tags: (initial?.tags || []).join(", "),
   });
 
+  const [emailError, setEmailError] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSave = () => {
-    if (!form.name || !form.description) return;
+    setEmailError("");
+    setWhatsappError("");
+    setNameError("");
+    setDescriptionError("");
+    if (!form.name) {
+      setNameError("Campo obrigatório");
+      return;
+    }
+    if (!form.description) {
+      setDescriptionError("Campo obrigatório");
+      return;
+    }
+    if (form.email && !isValidEmail(form.email)) {
+      setEmailError("E-mail inválido");
+      return;
+    }
+    if (form.whatsapp && !isValidBrazilPhone(form.whatsapp)) {
+      setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+      return;
+    }
     onSave({
       ...form,
       tags: form.tags
@@ -141,9 +166,18 @@ function EnterpriseForm({
           className={inputCls}
           value={form.name}
           onChange={(e) => set("name", e.target.value)}
+          onBlur={() => {
+            if (!form.name) setNameError("Campo obrigatório");
+            else setNameError("");
+          }}
           placeholder="Nome"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {nameError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {nameError}
+          </p>
+        )}
       </Field>
       <Field label="Categoria *">
         <select
@@ -164,10 +198,19 @@ function EnterpriseForm({
           className={inputCls}
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
+          onBlur={() => {
+            if (!form.description) setDescriptionError("Campo obrigatório");
+            else setDescriptionError("");
+          }}
           rows={2}
           placeholder="Descrição breve"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {descriptionError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {descriptionError}
+          </p>
+        )}
       </Field>
       <Field label="Descrição completa">
         <textarea
@@ -195,9 +238,19 @@ function EnterpriseForm({
             className={inputCls}
             value={form.whatsapp}
             onChange={(e) => set("whatsapp", e.target.value)}
+            onBlur={(e) => {
+              const v = e.target.value;
+              if (v && !isValidBrazilPhone(v)) setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              else setWhatsappError("");
+            }}
             placeholder="55999999999"
             style={{ fontFamily: "Nunito, sans-serif" }}
           />
+          {whatsappError && (
+            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+              {whatsappError}
+            </p>
+          )}
         </Field>
         <Field label="Instagram">
           <input
@@ -214,9 +267,19 @@ function EnterpriseForm({
           className={inputCls}
           value={form.email}
           onChange={(e) => set("email", e.target.value)}
+          onBlur={(e) => {
+            const v = e.target.value;
+            if (v && !isValidEmail(v)) setEmailError("E-mail inválido");
+            else setEmailError("");
+          }}
           placeholder="email@exemplo.com"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {emailError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {emailError}
+          </p>
+        )}
       </Field>
       <Field label="Tags (separadas por vírgula)">
         <input
@@ -264,10 +327,22 @@ function ProductForm({
     image: initial?.image || "",
   });
 
+  const [productNameError, setProductNameError] = useState("");
+  const [productPriceError, setProductPriceError] = useState("");
+
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSave = () => {
-    if (!form.name || !form.price) return;
+    setProductNameError("");
+    setProductPriceError("");
+    if (!form.name) {
+      setProductNameError("Campo obrigatório");
+      return;
+    }
+    if (!form.price) {
+      setProductPriceError("Campo obrigatório");
+      return;
+    }
     onSave({
       ...form,
       price: parseFloat(form.price) || 0,
@@ -281,9 +356,18 @@ function ProductForm({
           className={inputCls}
           value={form.name}
           onChange={(e) => set("name", e.target.value)}
+          onBlur={() => {
+            if (!form.name) setProductNameError("Campo obrigatório");
+            else setProductNameError("");
+          }}
           placeholder="Nome"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {productNameError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {productNameError}
+          </p>
+        )}
       </Field>
       <Field label="Descrição">
         <textarea
@@ -303,9 +387,18 @@ function ProductForm({
           step="0.01"
           value={form.price}
           onChange={(e) => set("price", e.target.value)}
+          onBlur={() => {
+            if (!form.price) setProductPriceError("Campo obrigatório");
+            else setProductPriceError("");
+          }}
           placeholder="0,00"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {productPriceError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {productPriceError}
+          </p>
+        )}
       </Field>
       <Field label="Imagem do produto">
         <ImageUploadField value={form.image} onChange={(value) => set("image", value)} />
@@ -351,12 +444,30 @@ function UserForm({
     active: initial?.active !== undefined ? initial.active : true,
   });
   const [showPwd, setShowPwd] = useState(false);
+  const [userEmailError, setUserEmailError] = useState("");
+  const [userPasswordError, setUserPasswordError] = useState("");
+  const [userNameError, setUserNameError] = useState("");
 
   const set = (k: string, v: string | boolean) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   const handleSave = () => {
-    if (!form.name || !form.email || !form.password) return;
+    setUserEmailError("");
+    setUserPasswordError("");
+    setUserNameError("");
+    if (!form.name) {
+      setUserNameError("Campo obrigatório");
+      return;
+    }
+    if (!form.email || !form.password) return;
+    if (!isValidEmail(form.email)) {
+      setUserEmailError("E-mail inválido");
+      return;
+    }
+    if (!isValidPassword(form.password)) {
+      setUserPasswordError("Senha deve ter ao menos 10 caracteres");
+      return;
+    }
     onSave({ ...form, role: form.role as "admin" | "owner" });
   };
 
@@ -367,9 +478,18 @@ function UserForm({
           className={inputCls}
           value={form.name}
           onChange={(e) => set("name", e.target.value)}
+          onBlur={() => {
+            if (!form.name) setUserNameError("Campo obrigatório");
+            else setUserNameError("");
+          }}
           placeholder="Nome"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {userNameError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {userNameError}
+          </p>
+        )}
       </Field>
       <Field label="E-mail *">
         <input
@@ -377,9 +497,20 @@ function UserForm({
           type="email"
           value={form.email}
           onChange={(e) => set("email", e.target.value)}
+          onBlur={(e) => {
+            const v = e.target.value;
+            if (!v) setUserEmailError("E-mail obrigatório");
+            else if (!isValidEmail(v)) setUserEmailError("E-mail inválido");
+            else setUserEmailError("");
+          }}
           placeholder="email@exemplo.com"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {userEmailError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {userEmailError}
+          </p>
+        )}
       </Field>
       <Field label="Senha *">
         <div className="relative">
@@ -388,6 +519,12 @@ function UserForm({
             type={showPwd ? "text" : "password"}
             value={form.password}
             onChange={(e) => set("password", e.target.value)}
+            onBlur={(e) => {
+              const v = e.target.value;
+              if (!v) setUserPasswordError("Senha obrigatória");
+              else if (!isValidPassword(v)) setUserPasswordError("Senha deve ter ao menos 10 caracteres");
+              else setUserPasswordError("");
+            }}
             placeholder="••••••••"
             style={{ fontFamily: "Nunito, sans-serif" }}
           />
@@ -399,6 +536,11 @@ function UserForm({
             {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
+        {userPasswordError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {userPasswordError}
+          </p>
+        )}
       </Field>
       <Field label="Perfil de acesso">
         <select

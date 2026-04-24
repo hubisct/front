@@ -18,6 +18,7 @@ import type { Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
+import { isValidEmail, isValidBrazilPhone } from "../utils/validation";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
 
@@ -128,6 +129,8 @@ function ProductForm({
     image: initial?.image || "",
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const [productNameError, setProductNameError] = useState("");
+  const [productPriceError, setProductPriceError] = useState("");
 
   return (
     <div className="space-y-4">
@@ -136,9 +139,18 @@ function ProductForm({
           className={inputCls}
           value={form.name}
           onChange={(e) => set("name", e.target.value)}
+          onBlur={() => {
+            if (!form.name) setProductNameError("Campo obrigatório");
+            else setProductNameError("");
+          }}
           placeholder="Nome"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {productNameError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {productNameError}
+          </p>
+        )}
       </Field>
       <Field label="Descrição">
         <textarea
@@ -158,9 +170,18 @@ function ProductForm({
           step="0.01"
           value={form.price}
           onChange={(e) => set("price", e.target.value)}
+          onBlur={() => {
+            if (!form.price) setProductPriceError("Campo obrigatório");
+            else setProductPriceError("");
+          }}
           placeholder="0,00"
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
+        {productPriceError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {productPriceError}
+          </p>
+        )}
       </Field>
       <Field label="Imagem do produto">
         <ImageUploadField value={form.image} onChange={(value) => set("image", value)} />
@@ -168,7 +189,16 @@ function ProductForm({
       <div className="flex gap-3 pt-2">
         <button
           onClick={() => {
-            if (!form.name || !form.price) return;
+            setProductNameError("");
+            setProductPriceError("");
+            if (!form.name) {
+              setProductNameError("Campo obrigatório");
+              return;
+            }
+            if (!form.price) {
+              setProductPriceError("Campo obrigatório");
+              return;
+            }
             onSave({ ...form, price: parseFloat(form.price) || 0 });
           }}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md transition-all hover:scale-[1.01]"
@@ -216,6 +246,8 @@ function EnterpriseEditForm({
     tags: enterprise.tags.join(", "),
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const [emailError, setEmailError] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
 
   return (
     <div className="space-y-4">
@@ -245,27 +277,67 @@ function EnterpriseEditForm({
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="WhatsApp">
-          <input className={inputCls} value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
+          <input
+            className={inputCls}
+            value={form.whatsapp}
+            onChange={(e) => set("whatsapp", e.target.value)}
+            onBlur={(e) => {
+              const v = e.target.value;
+              if (v && !isValidBrazilPhone(v)) setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              else setWhatsappError("");
+            }}
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          />
+          {whatsappError && (
+            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+              {whatsappError}
+            </p>
+          )}
         </Field>
         <Field label="Instagram">
           <input className={inputCls} value={form.instagram} onChange={(e) => set("instagram", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
         </Field>
       </div>
       <Field label="E-mail">
-        <input className={inputCls} value={form.email || ""} onChange={(e) => set("email", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
+        <input
+          className={inputCls}
+          value={form.email || ""}
+          onChange={(e) => set("email", e.target.value)}
+          onBlur={(e) => {
+            const v = e.target.value;
+            if (v && !isValidEmail(v)) setEmailError("E-mail inválido");
+            else setEmailError("");
+          }}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
+        {emailError && (
+          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            {emailError}
+          </p>
+        )}
       </Field>
       <Field label="Tags (separadas por vírgula)">
         <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
       </Field>
       <div className="flex gap-3 pt-2">
         <button
-          onClick={() =>
+          onClick={() => {
+            setEmailError("");
+            setWhatsappError("");
+            if (form.email && !isValidEmail(form.email)) {
+              setEmailError("E-mail inválido");
+              return;
+            }
+            if (form.whatsapp && !isValidBrazilPhone(form.whatsapp)) {
+              setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              return;
+            }
             onSave({
               ...form,
               tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
               category: form.category as Category,
-            })
-          }
+            });
+          }}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md"
           style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
         >

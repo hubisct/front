@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router";
 import { Eye, EyeOff, LogIn, ArrowLeft, Lock, Mail } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { isValidEmail, isValidPassword } from "../utils/validation";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Redirect if already logged in or after login
@@ -25,33 +28,41 @@ export function LoginPage() {
     }
   }, [user, navigate]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setEmailError("");
+    setPasswordError("");
 
-    setTimeout(() => {
-      const success = login(email, password);
-      setLoading(false);
-      if (!success) {
-        setError(
-          "E-mail ou senha incorretos. Verifique seus dados e tente novamente."
-        );
-      }
-      // If success, the useEffect above handles redirect
-    }, 600);
+    if (!isValidEmail(email)) {
+      setEmailError("E-mail inválido");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      setPasswordError("Senha deve ter ao menos 10 caracteres");
+      return;
+    }
+
+    setLoading(true);
+    const success = await login(email, password);
+    setLoading(false);
+    if (!success) {
+      setError(
+        "E-mail ou senha incorretos. Verifique seus dados e tente novamente."
+      );
+    }
   };
 
   const demoHints = [
     {
       role: "Administrador",
       email: "admin@hubis.ufsm.br",
-      password: "admin123",
+      password: "senhaadmin",
     },
     {
       role: "Dono de Empreendimento",
       email: "costurandosonhos@email.com",
-      password: "senha123",
+      password: "senhaempreendedor",
     },
   ];
 
@@ -145,12 +156,22 @@ export function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => {
+                      if (!email) setEmailError("E-mail obrigatório");
+                      else if (!isValidEmail(email)) setEmailError("E-mail inválido");
+                      else setEmailError("");
+                    }}
                     required
                     placeholder="seu@email.com"
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-gray-50 focus:bg-white"
                     style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                   />
                 </div>
+                {emailError && (
+                  <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -171,6 +192,11 @@ export function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={() => {
+                      if (!password) setPasswordError("Senha obrigatória");
+                      else if (!isValidPassword(password)) setPasswordError("Senha deve ter ao menos 10 caracteres");
+                      else setPasswordError("");
+                    }}
                     required
                     placeholder="••••••••"
                     className="w-full pl-11 pr-11 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-gray-50 focus:bg-white"
@@ -188,6 +214,11 @@ export function LoginPage() {
                     )}
                   </button>
                 </div>
+                {passwordError && (
+                  <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+                    {passwordError}
+                  </p>
+                )}
               </div>
 
               {/* Error message */}
