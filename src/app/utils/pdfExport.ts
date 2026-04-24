@@ -8,48 +8,144 @@ export function exportCatalogPDF(enterprise: Enterprise): void {
   printWindow.document.write(html);
   printWindow.document.close();
 
-  // Wait for images to load then print
-  printWindow.onload = () => {
-    setTimeout(() => {
-      printWindow.focus();
-      printWindow.print();
-    }, 500);
+  // Wait for images to load before printing.
+  printWindow.onload = async () => {
+    await waitForImagesToLoad(printWindow, 5000);
+    printWindow.focus();
+    printWindow.print();
   };
 }
 
+function waitForImagesToLoad(targetWindow: Window, timeoutMs: number): Promise<void> {
+  const images = Array.from(targetWindow.document.images);
+
+  if (images.length === 0) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    let settledCount = 0;
+    let finished = false;
+    let timeoutId: number | undefined;
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+      resolve();
+    };
+
+    const settleOne = () => {
+      settledCount += 1;
+      if (settledCount >= images.length) {
+        finish();
+      }
+    };
+
+    timeoutId = window.setTimeout(finish, timeoutMs);
+
+    images.forEach((image) => {
+      if (image.complete) {
+        settleOne();
+        return;
+      }
+
+      image.addEventListener("load", settleOne, { once: true });
+      image.addEventListener("error", settleOne, { once: true });
+    });
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function sanitizeText(value?: string): string {
+  return escapeHtml((value || "").trim());
+}
+
+function sanitizeImageSrc(value?: string): string {
+  return escapeHtml((value || "").trim());
+}
+
 function generateCatalogHTML(enterprise: Enterprise): string {
-  const formatPrice = (p: number) =>
-    `R$ ${p.toFixed(2).replace(".", ",")}`;
+  const formatPrice = (p: number) => `R$ ${p.toFixed(2).replace(".", ",")}`;
+
+  const enterpriseName = sanitizeText(enterprise.name) || "Empreendimento";
+  const enterpriseCategory = sanitizeText(enterprise.category) || "Sem categoria";
+  const enterpriseDescription = sanitizeText(enterprise.fullDescription || enterprise.description) || "Descrição não informada.";
+
+  const coverImageSrc = sanitizeImageSrc(enterprise.coverImage);
+  const coverHTML = coverImageSrc
+    ? `<div class="cover-wrapper">
+        <img
+          class="cover-image"
+          src="${coverImageSrc}"
+          alt="Imagem de capa de ${enterpriseName}"
+          loading="eager"
+          onerror="this.style.display='none'; if (this.nextElementSibling) { this.nextElementSibling.style.display='flex'; }"
+        />
+        <div class="cover-fallback" style="display:none;">Imagem de capa indisponível.</div>
+      </div>`
+    : `<div class="cover-fallback">Sem imagem de capa cadastrada.</div>`;
 
   const productsHTML = enterprise.products
-    .map(
-      (p, i) => `
+    .map((p, i) => {
+      const productName = sanitizeText(p.name) || `Produto ${i + 1}`;
+      const productDescription = sanitizeText(p.description) || "Sem descrição.";
+      const productImageSrc = sanitizeImageSrc(p.image);
+      const productImageHTML = productImageSrc
+        ? `<img
+            class="product-image"
+            src="${productImageSrc}"
+            alt="Imagem do produto ${productName}"
+            loading="lazy"
+            onerror="this.style.display='none'; if (this.nextElementSibling) { this.nextElementSibling.style.display='flex'; }"
+          />
+          <div class="product-image-placeholder" style="display:none;">Sem imagem</div>`
+        : `<div class="product-image-placeholder">Sem imagem</div>`;
+
+      return `
       <div class="product-row ${i % 2 === 0 ? "even" : "odd"}">
+        <div class="product-media">
+          ${productImageHTML}
+        </div>
         <div class="product-num">${i + 1}</div>
         <div class="product-info">
-          <div class="product-name">${p.name}</div>
-          <div class="product-desc">${p.description}</div>
+          <div class="product-name">${productName}</div>
+          <div class="product-desc">${productDescription}</div>
         </div>
         <div class="product-price">${formatPrice(p.price)}</div>
       </div>
-    `
-    )
+    `;
+    })
     .join("");
 
-  const contactsHTML = [
+  const contactsItems = [
     enterprise.whatsapp
-      ? `<div class="contact-item"><span class="contact-label">WhatsApp:</span> <span>+${enterprise.whatsapp}</span></div>`
+      ? `<div class="contact-item"><span class="contact-label">WhatsApp:</span> <span>+${sanitizeText(enterprise.whatsapp)}</span></div>`
       : "",
     enterprise.instagram
-      ? `<div class="contact-item"><span class="contact-label">Instagram:</span> <span>${enterprise.instagram}</span></div>`
+      ? `<div class="contact-item"><span class="contact-label">Instagram:</span> <span>${sanitizeText(enterprise.instagram)}</span></div>`
       : "",
     enterprise.email
-      ? `<div class="contact-item"><span class="contact-label">E-mail:</span> <span>${enterprise.email}</span></div>`
+      ? `<div class="contact-item"><span class="contact-label">E-mail:</span> <span>${sanitizeText(enterprise.email)}</span></div>`
       : "",
-  ].join("");
+  ].filter(Boolean);
+
+  const contactsHTML = contactsItems.length > 0
+    ? contactsItems.join("")
+    : '<div class="contact-empty">Nenhum contato informado.</div>';
 
   const tagsHTML = enterprise.tags
-    .map((t) => `<span class="tag">#${t}</span>`)
+    .map((t) => `<span class="tag">#${sanitizeText(t)}</span>`)
     .join(" ");
 
   const today = new Date().toLocaleDateString("pt-BR");
@@ -59,7 +155,7 @@ function generateCatalogHTML(enterprise: Enterprise): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo – ${enterprise.name}</title>
+  <title>Catálogo – ${enterpriseName}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -120,6 +216,37 @@ function generateCatalogHTML(enterprise: Enterprise): string {
 
     .content { padding: 28px 36px; }
 
+    /* COVER */
+    .cover-section {
+      margin-bottom: 20px;
+    }
+    .cover-wrapper {
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #F3F4F6;
+    }
+    .cover-image {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .cover-fallback {
+      width: 100%;
+      min-height: 130px;
+      border: 1px dashed #D1D5DB;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #6B7280;
+      font-size: 12px;
+      background: #F9FAFB;
+      padding: 16px;
+    }
+
     /* DESCRIPTION */
     .desc-box {
       background: #F9F7FF;
@@ -159,6 +286,11 @@ function generateCatalogHTML(enterprise: Enterprise): string {
       font-weight: 700;
       color: #6B7280;
       margin-right: 4px;
+    }
+    .contact-empty {
+      color: #9CA3AF;
+      font-style: italic;
+      font-size: 12px;
     }
     .divider {
       border: none;
@@ -205,14 +337,47 @@ function generateCatalogHTML(enterprise: Enterprise): string {
     }
     .product-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 14px;
       padding: 12px 14px;
       border-radius: 8px;
       margin-bottom: 6px;
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
     .product-row.even { background: #F9F7FF; }
     .product-row.odd { background: #F9FAFB; }
+    .product-media {
+      width: 82px;
+      height: 82px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #F3F4F6;
+      border: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .product-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #9CA3AF;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 8px;
+      background: #F9FAFB;
+    }
     .product-num {
       width: 26px;
       height: 26px;
@@ -283,16 +448,21 @@ function generateCatalogHTML(enterprise: Enterprise): string {
     <div class="header-date">${today}</div>
     <div class="header-brand">Vitrine Social · Incubadora Social UFSM</div>
     <div class="header-title">Catálogo de Produtos</div>
-    <div class="header-sub">${enterprise.name}</div>
-    <div class="header-cat">${enterprise.category}</div>
+    <div class="header-sub">${enterpriseName}</div>
+    <div class="header-cat">${enterpriseCategory}</div>
   </div>
 
   <!-- CONTENT -->
   <div class="content">
+    <!-- Cover image -->
+    <div class="cover-section">
+      ${coverHTML}
+    </div>
+
     <!-- Description -->
     <div class="desc-box">
       <div class="section-title">Sobre o Empreendimento</div>
-      <div class="desc-text">${enterprise.fullDescription || enterprise.description}</div>
+      <div class="desc-text">${enterpriseDescription}</div>
     </div>
 
     <!-- Contacts -->
