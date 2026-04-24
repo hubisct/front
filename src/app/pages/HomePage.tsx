@@ -46,7 +46,7 @@ export function HomePage() {
   const hasActiveFilters = search.trim() !== "" || selectedCategory !== "Todas";
 
   return (
-    <div className="w-full">
+    <div id="topo" className="w-full">
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden min-h-[520px] md:min-h-[600px] flex items-center">
         {/* Background image + overlay */}
@@ -253,7 +253,7 @@ export function HomePage() {
       </section>
 
       {/* ── ABOUT SECTION ────────────────────────────────────────── */}
-      <section className="py-16 overflow-hidden relative"
+      <section id="sobre-incubadora" className="py-16 overflow-hidden relative"
         style={{ background: "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 50%, #EFF6FF 100%)" }}>
         {/* Decorative elements */}
         <div className="absolute top-8 right-8 w-32 h-32 rounded-full opacity-30"
