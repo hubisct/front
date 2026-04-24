@@ -26,11 +26,8 @@ import type { Enterprise, Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
-import {
-  isValidEmail,
-  isValidPassword,
-  isValidBrazilPhone,
-} from "../utils/validation";
+import { isValidEmail, isValidPassword, isValidBrazilPhone } from "../utils/validation";
+import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 
 type Tab = "dashboard" | "enterprises" | "users";
 
@@ -345,10 +342,14 @@ function ProductForm({
   onSave: (data: Partial<Product>) => void;
   onClose: () => void;
 }) {
+  const initialPriceMode = resolvePriceMode(initial || {});
   const [form, setForm] = useState({
     name: initial?.name || "",
     description: initial?.description || "",
-    price: initial?.price?.toString() || "",
+    priceMode: initialPriceMode,
+    price: initialPriceMode === "single" ? initial?.price?.toString() || "" : "",
+    priceMin: initialPriceMode === "range" ? initial?.priceMin?.toString() || initial?.price?.toString() || "" : "",
+    priceMax: initialPriceMode === "range" ? initial?.priceMax?.toString() || initial?.price?.toString() || "" : "",
     image: initial?.image || "",
   });
 
@@ -364,13 +365,57 @@ function ProductForm({
       setProductNameError("Campo obrigatório");
       return;
     }
-    if (!form.price) {
-      setProductPriceError("Campo obrigatório");
+    if (form.priceMode === "single") {
+      if (!form.price) {
+        setProductPriceError("Campo obrigatório");
+        return;
+      }
+      const singlePrice = parseFloat(form.price);
+      if (Number.isNaN(singlePrice) || singlePrice < 0) {
+        setProductPriceError("Informe um preço válido");
+        return;
+      }
+      onSave({
+        name: form.name,
+        description: form.description,
+        image: form.image,
+        priceMode: "single",
+        price: singlePrice,
+      });
+      return;
+    }
+    if (form.priceMode === "range") {
+      if (!form.priceMin || !form.priceMax) {
+        setProductPriceError("Preencha mínimo e máximo");
+        return;
+      }
+      const min = parseFloat(form.priceMin);
+      const max = parseFloat(form.priceMax);
+      if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
+        setProductPriceError("Informe uma faixa válida");
+        return;
+      }
+      if (min > max) {
+        setProductPriceError("O mínimo não pode ser maior que o máximo");
+        return;
+      }
+      onSave({
+        name: form.name,
+        description: form.description,
+        image: form.image,
+        priceMode: "range",
+        price: min,
+        priceMin: min,
+        priceMax: max,
+      });
       return;
     }
     onSave({
-      ...form,
-      price: parseFloat(form.price) || 0,
+      name: form.name,
+      description: form.description,
+      image: form.image,
+      priceMode: "hidden",
+      price: 0,
     });
   };
 
@@ -407,30 +452,72 @@ function ProductForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
       </Field>
-      <Field label="Preço (R$) *">
-        <input
+      <Field label="Exibição de preço *">
+        <select
           className={inputCls}
-          type="number"
-          min="0"
-          step="0.01"
-          value={form.price}
-          onChange={(e) => set("price", e.target.value)}
-          onBlur={() => {
-            if (!form.price) setProductPriceError("Campo obrigatório");
-            else setProductPriceError("");
+          value={form.priceMode}
+          onChange={(e) => {
+            set("priceMode", e.target.value);
+            setProductPriceError("");
           }}
-          placeholder="0,00"
           style={{ fontFamily: "Nunito, sans-serif" }}
-        />
-        {productPriceError && (
-          <p
-            className="text-red-600 text-sm mt-1"
-            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
-          >
-            {productPriceError}
-          </p>
-        )}
+        >
+          <option value="single">Preço único</option>
+          <option value="range">Faixa de preço</option>
+          <option value="hidden">Não mostrar preço</option>
+        </select>
       </Field>
+      {form.priceMode === "single" && (
+        <Field label="Preço (R$) *">
+          <input
+            className={inputCls}
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.price}
+            onChange={(e) => set("price", e.target.value)}
+            onBlur={() => {
+              if (!form.price) setProductPriceError("Campo obrigatório");
+              else setProductPriceError("");
+            }}
+            placeholder="0,00"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          />
+        </Field>
+      )}
+      {form.priceMode === "range" && (
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Preço mínimo (R$) *">
+            <input
+              className={inputCls}
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.priceMin}
+              onChange={(e) => set("priceMin", e.target.value)}
+              placeholder="0,00"
+              style={{ fontFamily: "Nunito, sans-serif" }}
+            />
+          </Field>
+          <Field label="Preço máximo (R$) *">
+            <input
+              className={inputCls}
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.priceMax}
+              onChange={(e) => set("priceMax", e.target.value)}
+              placeholder="0,00"
+              style={{ fontFamily: "Nunito, sans-serif" }}
+            />
+          </Field>
+        </div>
+      )}
+      {productPriceError && (
+        <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          {productPriceError}
+        </p>
+      )}
       <Field label="Imagem do produto">
         <ImageUploadField
           value={form.image}
@@ -805,11 +892,15 @@ export function AdminPanel() {
   };
 
   const handleAddProduct = (enterpriseId: string, data: Partial<Product>) => {
+    const priceMode = resolvePriceMode(data);
     const newProduct: Product = {
       id: `${enterpriseId}-${Date.now()}`,
       name: data.name!,
       description: data.description || "",
-      price: data.price || 0,
+      priceMode,
+      price: data.price ?? data.priceMin ?? 0,
+      priceMin: data.priceMin,
+      priceMax: data.priceMax,
       image: data.image || "",
     };
     addProduct(enterpriseId, newProduct);
@@ -1303,14 +1394,14 @@ export function AdminPanel() {
                                     >
                                       {p.name}
                                     </p>
-                                    <p
-                                      className="text-purple-600 text-xs font-bold"
-                                      style={{
-                                        fontFamily: "Nunito, sans-serif",
-                                      }}
-                                    >
-                                      R$ {p.price.toFixed(2).replace(".", ",")}
-                                    </p>
+                                    {getProductPriceLabel(p) && (
+                                      <p
+                                        className="text-purple-600 text-xs font-bold"
+                                        style={{ fontFamily: "Nunito, sans-serif" }}
+                                      >
+                                        {getProductPriceLabel(p)}
+                                      </p>
+                                    )}
                                   </div>
                                   <div className="flex items-center gap-1">
                                     <button

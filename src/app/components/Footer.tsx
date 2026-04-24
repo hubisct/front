@@ -1,5 +1,4 @@
 import { Sprout, MapPin, Phone, Mail, Instagram, ExternalLink, Heart } from "lucide-react";
-import { Link } from "react-router";
 
 export function Footer() {
   return (
@@ -41,7 +40,7 @@ export function Footer() {
             {/* Social */}
             <div className="flex gap-3">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/hubisufsm/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl bg-gray-800 hover:bg-gradient-to-br flex items-center justify-center transition-colors group"
@@ -51,7 +50,7 @@ export function Footer() {
                 <Instagram className="w-5 h-5 group-hover:text-pink-400 transition-colors" />
               </a>
               <a
-                href="https://wa.me/555532208500"
+                href="https://wa.me/555591580632"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-xl bg-gray-800 hover:bg-green-700 flex items-center justify-center transition-colors"
@@ -62,7 +61,7 @@ export function Footer() {
                 </svg>
               </a>
               <a
-                href="mailto:incubadora@ufsm.br"
+                href="mailto:incubadorasocial@ufsm.br"
                 className="w-10 h-10 rounded-xl bg-gray-800 hover:bg-blue-700 flex items-center justify-center transition-colors"
                 title="Email"
               >
@@ -81,19 +80,19 @@ export function Footer() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                { label: "Início", to: "/" },
-                { label: "Empreendimentos", to: "/" },
-                { label: "Sobre a Incubadora", to: "/" },
+                { label: "Início", href: "/#topo" },
+                { label: "Empreendimentos", href: "/#empreendimentos" },
+                { label: "Sobre a Incubadora", href: "/#sobre-incubadora" },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link
-                    to={item.to}
+                  <a
+                    href={item.href}
                     className="text-gray-400 hover:text-orange-400 transition-colors text-sm font-semibold flex items-center gap-2 group"
                     style={{ fontFamily: "Nunito, sans-serif" }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0 group-hover:bg-orange-400 transition-colors" />
                     {item.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
               <li>
@@ -123,39 +122,47 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
-                <span
+                <a
+                  href="https://maps.app.goo.gl/BLM7VkwpAWGWTqU1A"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 text-sm"
                   style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                 >
-                  Av. Roraima, 1000<br />Santa Maria, RS – 97105-900
-                </span>
+                  R. Floriano Peixoto, 1184 - Centro<br />Santa Maria, RS 97015-372
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-orange-400 flex-shrink-0" />
-                <span
+                <a
+                  href="https://wa.me/555591580632"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 text-sm"
                   style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                 >
-                  (55) 3220-8500
-                </span>
+                  (55) 9158-0632
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-orange-400 flex-shrink-0" />
-                <span
+                <a
+                  href="mailto:incubadorasocial@ufsm.br"
                   className="text-gray-400 text-sm"
                   style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                 >
-                  incubadora@ufsm.br
-                </span>
+                  incubadorasocial@ufsm.br
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Instagram className="w-4 h-4 text-orange-400 flex-shrink-0" />
-                <span
+                <a
+                  href="https://www.instagram.com/hubisufsm/"
                   className="text-gray-400 text-sm"
                   style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                 >
-                  @incubadorasocial.ufsm
-                </span>
+                  @hubisufsm
+                </a>
               </li>
             </ul>
           </div>

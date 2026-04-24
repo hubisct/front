@@ -1,4 +1,5 @@
 import type { Enterprise } from "../types";
+import { getProductPriceLabel } from "./pricing";
 
 export function exportCatalogPDF(enterprise: Enterprise): void {
   const printWindow = window.open("", "_blank", "width=900,height=700");
@@ -76,8 +77,6 @@ function sanitizeImageSrc(value?: string): string {
 }
 
 function generateCatalogHTML(enterprise: Enterprise): string {
-  const formatPrice = (p: number) => `R$ ${p.toFixed(2).replace(".", ",")}`;
-
   const enterpriseName = sanitizeText(enterprise.name) || "Empreendimento";
   const enterpriseCategory = sanitizeText(enterprise.category) || "Sem categoria";
   const enterpriseDescription = sanitizeText(enterprise.fullDescription || enterprise.description) || "Descrição não informada.";
@@ -100,6 +99,7 @@ function generateCatalogHTML(enterprise: Enterprise): string {
     .map((p, i) => {
       const productName = sanitizeText(p.name) || `Produto ${i + 1}`;
       const productDescription = sanitizeText(p.description) || "Sem descrição.";
+      const productPriceLabel = getProductPriceLabel(p);
       const productImageSrc = sanitizeImageSrc(p.image);
       const productImageHTML = productImageSrc
         ? `<img
@@ -122,7 +122,7 @@ function generateCatalogHTML(enterprise: Enterprise): string {
           <div class="product-name">${productName}</div>
           <div class="product-desc">${productDescription}</div>
         </div>
-        <div class="product-price">${formatPrice(p.price)}</div>
+        ${productPriceLabel ? `<div class="product-price">${sanitizeText(productPriceLabel)}</div>` : ""}
       </div>
     `;
     })
