@@ -36,7 +36,7 @@ export function HomePage() {
         selectedCategory === "Todas" || e.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [search, selectedCategory]);
+  }, [search, selectedCategory, enterprises]);
 
   const clearFilters = () => {
     setSearch("");
