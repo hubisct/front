@@ -12,11 +12,13 @@ import { categoryColors } from "../data/constants";
 import { ProductCard } from "../components/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
+import { useState } from "react";
 
 export function EnterprisePage() {
   const { id } = useParams<{ id: string }>();
   const { enterprises, isAdmin, isOwner, myEnterprise } = useAuth();
   const enterprise = enterprises.find((e) => e.id === id);
+  const [expanded, setExpanded] = useState(false);
 
   // Can user export PDF?
   const canExportPDF =
@@ -28,17 +30,27 @@ export function EnterprisePage() {
         <div className="text-6xl mb-4">😕</div>
         <h2
           className="text-gray-800 mb-2"
-          style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.6rem" }}
+          style={{
+            fontFamily: "Poppins, sans-serif",
+            fontWeight: 700,
+            fontSize: "1.6rem",
+          }}
         >
           Empreendimento não encontrado
         </h2>
-        <p className="text-gray-500 mb-6" style={{ fontFamily: "Nunito, sans-serif" }}>
+        <p
+          className="text-gray-500 mb-6"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
           O empreendimento que você procura não existe ou foi removido.
         </p>
         <Link
           to="/"
           className="flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-bold shadow-md"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+          style={{
+            background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+            fontFamily: "Nunito, sans-serif",
+          }}
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar ao início
@@ -47,9 +59,10 @@ export function EnterprisePage() {
     );
   }
 
+  const isLong = enterprise.description.length > 85;
   const colors = categoryColors[enterprise.category];
   const whatsappMessage = encodeURIComponent(
-    `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`
+    `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`,
   );
   const whatsappUrl = `https://wa.me/${enterprise.whatsapp}?text=${whatsappMessage}`;
 
@@ -114,6 +127,44 @@ export function EnterprisePage() {
               {enterprise.name}
             </h1>
           </div>
+
+          {/* Description with "Read more" toggle if too long */}
+          <div className="max-w-7xl mx-auto">
+            <p
+              className="text-gray-200 leading-relaxed"
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                fontWeight: 600,
+                fontSize: "0.95rem",
+              }}
+            >
+              {expanded || !isLong ? (
+                <>
+                  {enterprise.description}
+                  {isLong && (
+                    <span
+                      onClick={() => setExpanded(false)}
+                      className="text-purple-600 hover:text-purple-700 font-bold text-sm cursor-pointer"
+                    >
+                      {" "}
+                      Ler menos
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  {enterprise.description.slice(0, 70)}...
+                  <span
+                    onClick={() => setExpanded(true)}
+                    className="text-purple-600 hover:text-purple-700 font-bold text-sm cursor-pointer"
+                  >
+                    {" "}
+                    Ler mais
+                  </span>
+                </>
+              )}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -127,18 +178,28 @@ export function EnterprisePage() {
               <div className="flex items-center gap-2 mb-4">
                 <div
                   className="w-1 h-5 rounded-full"
-                  style={{ background: "linear-gradient(180deg, #7C3AED, #EA580C)" }}
+                  style={{
+                    background: "linear-gradient(180deg, #7C3AED, #EA580C)",
+                  }}
                 />
                 <h2
                   className="text-gray-800"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1rem" }}
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                  }}
                 >
                   Sobre o Empreendimento
                 </h2>
               </div>
               <p
                 className="text-gray-600 leading-relaxed"
-                style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600, fontSize: "0.95rem" }}
+                style={{
+                  fontFamily: "Nunito, sans-serif",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                }}
               >
                 {enterprise.fullDescription}
               </p>
@@ -153,7 +214,9 @@ export function EnterprisePage() {
                 <div className="flex items-center gap-2 mb-1">
                   <div
                     className="w-1 h-5 rounded-full"
-                    style={{ background: "linear-gradient(180deg, #7C3AED, #EA580C)" }}
+                    style={{
+                      background: "linear-gradient(180deg, #7C3AED, #EA580C)",
+                    }}
                   />
                   <span
                     className="text-purple-700 font-bold text-xs uppercase tracking-wider"
@@ -164,20 +227,23 @@ export function EnterprisePage() {
                 </div>
                 <h2
                   className="text-gray-900"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.4rem" }}
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.4rem",
+                  }}
                 >
                   Produtos disponíveis
                 </h2>
               </div>
-              <div
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-200"
-              >
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-200">
                 <ShoppingBag className="w-4 h-4 text-purple-600" />
                 <span
                   className="text-purple-700 font-bold text-sm"
                   style={{ fontFamily: "Nunito, sans-serif" }}
                 >
-                  {enterprise.products.length} produto{enterprise.products.length !== 1 ? "s" : ""}
+                  {enterprise.products.length} produto
+                  {enterprise.products.length !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
@@ -201,11 +267,17 @@ export function EnterprisePage() {
                 <div className="flex items-center gap-2 mb-4">
                   <div
                     className="w-1 h-5 rounded-full"
-                    style={{ background: "linear-gradient(180deg, #FBBF24, #F97316)" }}
+                    style={{
+                      background: "linear-gradient(180deg, #FBBF24, #F97316)",
+                    }}
                   />
                   <h2
                     className="text-gray-800"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1rem" }}
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                    }}
                   >
                     Tags
                   </h2>
@@ -228,11 +300,17 @@ export function EnterprisePage() {
                 <div className="flex items-center gap-2 mb-5">
                   <div
                     className="w-1 h-5 rounded-full"
-                    style={{ background: "linear-gradient(180deg, #2563EB, #3B82F6)" }}
+                    style={{
+                      background: "linear-gradient(180deg, #2563EB, #3B82F6)",
+                    }}
                   />
                   <h2
                     className="text-gray-800"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1rem" }}
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                    }}
                   >
                     Contato
                   </h2>
@@ -275,8 +353,13 @@ export function EnterprisePage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-xl bg-pink-50 border border-pink-200 hover:bg-pink-100 transition-all group"
                   >
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform"
-                      style={{ background: "linear-gradient(135deg, #E1306C, #833AB4, #F77737)" }}>
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #E1306C, #833AB4, #F77737)",
+                      }}
+                    >
                       <Instagram className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -329,7 +412,9 @@ export function EnterprisePage() {
             {/* Order CTA banner */}
             <div
               className="mt-8 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5 overflow-hidden relative"
-              style={{ background: "linear-gradient(135deg, #F3F0FF, #EDE9FE)" }}
+              style={{
+                background: "linear-gradient(135deg, #F3F0FF, #EDE9FE)",
+              }}
             >
               <div
                 className="absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-30 blur-xl"
@@ -338,7 +423,11 @@ export function EnterprisePage() {
               <div className="flex-1 relative z-10">
                 <p
                   className="text-purple-900 mb-1"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.05rem" }}
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                  }}
                 >
                   Quer encomendar algum produto?
                 </p>
@@ -346,8 +435,8 @@ export function EnterprisePage() {
                   className="text-purple-700 text-sm"
                   style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
                 >
-                  Entre em contato direto com o empreendimento via WhatsApp para pedidos
-                  personalizados, quantidades maiores ou tirar dúvidas.
+                  Entre em contato direto com o empreendimento via WhatsApp para
+                  pedidos personalizados, quantidades maiores ou tirar dúvidas.
                 </p>
               </div>
               <a
@@ -355,7 +444,10 @@ export function EnterprisePage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 whitespace-nowrap flex-shrink-0 relative z-10"
-                style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+                style={{
+                  background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                  fontFamily: "Nunito, sans-serif",
+                }}
               >
                 Falar no WhatsApp
               </a>
@@ -367,13 +459,19 @@ export function EnterprisePage() {
       {/* ── OTHER ENTERPRISES ─────────────────────────────────────── */}
       <section
         className="py-12"
-        style={{ background: "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 100%)" }}
+        style={{
+          background: "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 100%)",
+        }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h3
               className="text-gray-800"
-              style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.3rem" }}
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 700,
+                fontSize: "1.3rem",
+              }}
             >
               Outros empreendimentos
             </h3>
@@ -413,7 +511,11 @@ export function EnterprisePage() {
                       </span>
                       <p
                         className="text-gray-800 truncate"
-                        style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "0.9rem" }}
+                        style={{
+                          fontFamily: "Poppins, sans-serif",
+                          fontWeight: 700,
+                          fontSize: "0.9rem",
+                        }}
                       >
                         {e.name}
                       </p>
@@ -424,7 +526,9 @@ export function EnterprisePage() {
                         {e.products.length} produtos
                       </p>
                     </div>
-                    <div className="text-purple-400 group-hover:text-purple-600 transition-colors">→</div>
+                    <div className="text-purple-400 group-hover:text-purple-600 transition-colors">
+                      →
+                    </div>
                   </Link>
                 );
               })}

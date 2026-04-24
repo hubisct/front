@@ -42,16 +42,16 @@ function Modal({
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-2 sm:mx-0">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
           <h3
-            className="text-gray-900"
-            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.05rem" }}
+            className="text-gray-900 text-base sm:text-lg"
+            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700 }}
           >
             {title}
           </h3>
@@ -62,7 +62,7 @@ function Modal({
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="p-4 sm:p-5">{children}</div>
       </div>
     </div>
   );
@@ -80,7 +80,11 @@ function Field({
     <div>
       <label
         className="block text-gray-700 mb-1"
-        style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700, fontSize: "0.85rem" }}
+        style={{
+          fontFamily: "Nunito, sans-serif",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+        }}
       >
         {label}
       </label>
@@ -175,7 +179,10 @@ function EnterpriseForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {nameError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {nameError}
           </p>
         )}
@@ -208,7 +215,10 @@ function EnterpriseForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {descriptionError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {descriptionError}
           </p>
         )}
@@ -233,7 +243,7 @@ function EnterpriseForm({
           buttonLabel="Carregar imagem de capa"
         />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Field label="WhatsApp (DDD + número)">
           <input
             className={inputCls}
@@ -241,14 +251,20 @@ function EnterpriseForm({
             onChange={(e) => set("whatsapp", e.target.value)}
             onBlur={(e) => {
               const v = e.target.value;
-              if (v && !isValidBrazilPhone(v)) setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              if (v && !isValidBrazilPhone(v))
+                setWhatsappError(
+                  "Telefone inválido, use DDD + número (ex: 55999999999)",
+                );
               else setWhatsappError("");
             }}
             placeholder="55999999999"
             style={{ fontFamily: "Nunito, sans-serif" }}
           />
           {whatsappError && (
-            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            <p
+              className="text-red-600 text-sm mt-1"
+              style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+            >
               {whatsappError}
             </p>
           )}
@@ -277,7 +293,10 @@ function EnterpriseForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {emailError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {emailError}
           </p>
         )}
@@ -302,7 +321,9 @@ function EnterpriseForm({
         </button>
         <button
           onClick={onClose}
-          className={btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"}
+          className={
+            btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"
+          }
         >
           Cancelar
         </button>
@@ -413,7 +434,10 @@ function ProductForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {productNameError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {productNameError}
           </p>
         )}
@@ -495,7 +519,10 @@ function ProductForm({
         </p>
       )}
       <Field label="Imagem do produto">
-        <ImageUploadField value={form.image} onChange={(value) => set("image", value)} />
+        <ImageUploadField
+          value={form.image}
+          onChange={(value) => set("image", value)}
+        />
       </Field>
       <div className="flex gap-3 pt-2">
         <button
@@ -508,7 +535,9 @@ function ProductForm({
         </button>
         <button
           onClick={onClose}
-          className={btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"}
+          className={
+            btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"
+          }
         >
           Cancelar
         </button>
@@ -580,7 +609,10 @@ function UserForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {userNameError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {userNameError}
           </p>
         )}
@@ -601,7 +633,10 @@ function UserForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {userEmailError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {userEmailError}
           </p>
         )}
@@ -616,7 +651,8 @@ function UserForm({
             onBlur={(e) => {
               const v = e.target.value;
               if (!v) setUserPasswordError("Senha obrigatória");
-              else if (!isValidPassword(v)) setUserPasswordError("Senha deve ter ao menos 10 caracteres");
+              else if (!isValidPassword(v))
+                setUserPasswordError("Senha deve ter ao menos 10 caracteres");
               else setUserPasswordError("");
             }}
             placeholder="••••••••"
@@ -627,11 +663,18 @@ function UserForm({
             onClick={() => setShowPwd(!showPwd)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
           >
-            {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPwd ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
           </button>
         </div>
         {userPasswordError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {userPasswordError}
           </p>
         )}
@@ -696,7 +739,9 @@ function UserForm({
         </button>
         <button
           onClick={onClose}
-          className={btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"}
+          className={
+            btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"
+          }
         >
           Cancelar
         </button>
@@ -717,7 +762,10 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onCancel}
+      />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
         <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-6 h-6 text-red-600" />
@@ -771,12 +819,16 @@ export function AdminPanel() {
   } = useAuth();
 
   const [tab, setTab] = useState<Tab>("dashboard");
-  const [expandedEnterprise, setExpandedEnterprise] = useState<string | null>(null);
+  const [expandedEnterprise, setExpandedEnterprise] = useState<string | null>(
+    null,
+  );
 
   // Enterprise modals
   const [showAddEnterprise, setShowAddEnterprise] = useState(false);
   const [editEnterprise, setEditEnterprise] = useState<Enterprise | null>(null);
-  const [deleteEnterprise, setDeleteEnterprise] = useState<Enterprise | null>(null);
+  const [deleteEnterprise, setDeleteEnterprise] = useState<Enterprise | null>(
+    null,
+  );
 
   // Product modals
   const [showAddProduct, setShowAddProduct] = useState<string | null>(null); // enterpriseId
@@ -807,7 +859,10 @@ export function AdminPanel() {
 
   const handleAddEnterprise = (data: Partial<Enterprise>) => {
     const newEnterprise: Enterprise = {
-      id: data.name!.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+      id: data
+        .name!.toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, ""),
       name: data.name!,
       category: data.category || "Artesanato",
       description: data.description || "",
@@ -874,7 +929,10 @@ export function AdminPanel() {
       {/* Top bar */}
       <div
         className="h-1.5 w-full"
-        style={{ background: "linear-gradient(90deg, #7C3AED, #EA580C, #FBBF24, #2563EB)" }}
+        style={{
+          background:
+            "linear-gradient(90deg, #7C3AED, #EA580C, #FBBF24, #2563EB)",
+        }}
       />
 
       <div className="flex flex-1">
@@ -909,7 +967,11 @@ export function AdminPanel() {
           <nav className="flex-1 p-4 space-y-1">
             {(
               [
-                { id: "dashboard", icon: LayoutDashboard, label: "Visão Geral" },
+                {
+                  id: "dashboard",
+                  icon: LayoutDashboard,
+                  label: "Visão Geral",
+                },
                 { id: "enterprises", icon: Store, label: "Empreendimentos" },
                 { id: "users", icon: Users, label: "Usuários" },
               ] as { id: Tab; icon: typeof LayoutDashboard; label: string }[]
@@ -965,7 +1027,11 @@ export function AdminPanel() {
           {/* Mobile top bar */}
           <div className="md:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
             <Link to="/">
-              <ImageWithFallback src="/logo-hubis.jpg" alt="HUB IS" className="h-8 w-auto" />
+              <ImageWithFallback
+                src="/logo-hubis.jpg"
+                alt="HUB IS"
+                className="h-8 w-auto"
+              />
             </Link>
             <div className="flex gap-1">
               {(
@@ -979,14 +1045,19 @@ export function AdminPanel() {
                   key={id}
                   onClick={() => setTab(id)}
                   className={`p-2 rounded-xl transition-colors ${
-                    tab === id ? "text-purple-700 bg-purple-50" : "text-gray-500"
+                    tab === id
+                      ? "text-purple-700 bg-purple-50"
+                      : "text-gray-500"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
                 </button>
               ))}
               <button
-                onClick={() => { logout(); navigate("/"); }}
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
                 className="p-2 rounded-xl text-red-500 hover:bg-red-50"
               >
                 <LogOut className="w-5 h-5" />
@@ -999,14 +1070,14 @@ export function AdminPanel() {
             {tab === "dashboard" && (
               <div>
                 <h1
-                  className="text-gray-900 mb-6"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1.6rem" }}
+                  className="text-gray-900 text-xl sm:text-2xl lg:text-3xl mb-4 sm:mb-6"
+                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800 }}
                 >
                   Visão Geral
                 </h1>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                   {[
                     {
                       label: "Empreendimentos",
@@ -1017,7 +1088,10 @@ export function AdminPanel() {
                     },
                     {
                       label: "Produtos",
-                      value: enterprises.reduce((a, e) => a + e.products.length, 0),
+                      value: enterprises.reduce(
+                        (a, e) => a + e.products.length,
+                        0,
+                      ),
                       icon: Package,
                       color: "#EA580C",
                       bg: "#FFF7ED",
@@ -1039,23 +1113,29 @@ export function AdminPanel() {
                   ].map((stat) => (
                     <div
                       key={stat.label}
-                      className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"
+                      className="bg-white rounded-2xl p-3 sm:p-5 border border-gray-100 shadow-sm"
                     >
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                        className="w-8 sm:w-10 h-8 sm:h-10 rounded-xl flex items-center justify-center mb-2 sm:mb-3"
                         style={{ background: stat.bg }}
                       >
-                        <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                        <stat.icon
+                          className="w-4 h-4 sm:w-5 sm:h-5"
+                          style={{ color: stat.color }}
+                        />
                       </div>
                       <p
-                        className="text-2xl font-black text-gray-900"
+                        className="text-xl sm:text-2xl font-black text-gray-900"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         {stat.value}
                       </p>
                       <p
                         className="text-gray-500 text-sm"
-                        style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                        style={{
+                          fontFamily: "Nunito, sans-serif",
+                          fontWeight: 600,
+                        }}
                       >
                         {stat.label}
                       </p>
@@ -1094,41 +1174,47 @@ export function AdminPanel() {
                     <button
                       key={action.label}
                       onClick={action.action}
-                      className="flex items-center gap-3 p-4 rounded-2xl text-white font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                      className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
                       style={{
                         background: action.color,
                         fontFamily: "Nunito, sans-serif",
                       }}
                     >
-                      <action.icon className="w-5 h-5" />
+                      <action.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       {action.label}
                     </button>
                   ))}
                 </div>
 
                 {/* Recent enterprises */}
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                   <h2
-                    className="text-gray-800 mb-4"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.1rem" }}
+                    className="text-gray-800 mb-3 sm:mb-4 text-base sm:text-lg"
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                    }}
                   >
                     Empreendimentos recentes
                   </h2>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {enterprises.slice(0, 5).map((e) => (
                       <div
                         key={e.id}
-                        className="flex items-center gap-4 bg-white rounded-xl p-4 border border-gray-100 shadow-sm"
+                        className="flex items-center gap-3 sm:gap-4 bg-white rounded-xl p-3 sm:p-4 border border-gray-100 shadow-sm"
                       >
                         <img
                           src={e.coverImage}
                           alt={e.name}
-                          className="w-12 h-12 rounded-xl object-cover"
+                          className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl object-cover flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
                           <p
-                            className="text-gray-900 truncate"
-                            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "0.95rem" }}
+                            className="text-gray-900 truncate text-sm"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              fontWeight: 700,
+                            }}
                           >
                             {e.name}
                           </p>
@@ -1136,16 +1222,17 @@ export function AdminPanel() {
                             className="text-gray-500 text-xs"
                             style={{ fontFamily: "Nunito, sans-serif" }}
                           >
-                            {e.category} · {e.products.length} produto{e.products.length !== 1 ? "s" : ""}
+                            {e.category} · {e.products.length} produto
+                            {e.products.length !== 1 ? "s" : ""}
                           </p>
                         </div>
                         <button
                           onClick={() => exportCatalogPDF(e)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold border border-purple-200 hover:bg-purple-100 transition-colors"
+                          className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold border border-purple-200 hover:bg-purple-100 transition-colors"
                           style={{ fontFamily: "Nunito, sans-serif" }}
                         >
                           <FileDown className="w-3.5 h-3.5" />
-                          PDF
+                          <span className="hidden sm:inline">PDF</span>
                         </button>
                       </div>
                     ))}
@@ -1157,40 +1244,51 @@ export function AdminPanel() {
             {/* ── ENTERPRISES TAB ───────────────────────────────────── */}
             {tab === "enterprises" && (
               <div>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
                   <h1
-                    className="text-gray-900"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1.6rem" }}
+                    className="text-gray-900 text-xl sm:text-2xl lg:text-3xl"
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 800,
+                    }}
                   >
                     Empreendimentos
                   </h1>
                   <button
                     onClick={() => setShowAddEnterprise(true)}
-                    className={btnPrimary}
-                    style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
+                    className={btnPrimary + " text-sm"}
+                    style={{
+                      background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                    }}
                   >
                     <Plus className="w-4 h-4" />
-                    Novo empreendimento
+                    <span className="hidden sm:inline">
+                      Novo empreendimento
+                    </span>
+                    <span className="sm:hidden">Novo</span>
                   </button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {enterprises.map((e) => (
                     <div
                       key={e.id}
                       className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
                     >
                       {/* Enterprise header row */}
-                      <div className="flex items-center gap-4 p-4">
+                      <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                         <img
                           src={e.coverImage}
                           alt={e.name}
-                          className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
+                          className="w-12 sm:w-14 h-12 sm:h-14 rounded-xl object-cover flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
                           <p
-                            className="text-gray-900 truncate"
-                            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700 }}
+                            className="text-gray-900 truncate text-sm sm:text-base"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              fontWeight: 700,
+                            }}
                           >
                             {e.name}
                           </p>
@@ -1198,38 +1296,39 @@ export function AdminPanel() {
                             className="text-gray-500 text-xs"
                             style={{ fontFamily: "Nunito, sans-serif" }}
                           >
-                            {e.category} · {e.products.length} produto{e.products.length !== 1 ? "s" : ""}
+                            {e.category} · {e.products.length} produto
+                            {e.products.length !== 1 ? "s" : ""}
                           </p>
                         </div>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           <button
                             onClick={() => exportCatalogPDF(e)}
                             title="Exportar PDF"
-                            className="p-2 rounded-xl text-purple-600 hover:bg-purple-50 transition-colors border border-purple-200"
+                            className="p-1.5 sm:p-2 rounded-xl text-purple-600 hover:bg-purple-50 transition-colors border border-purple-200"
                           >
                             <FileDown className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setEditEnterprise(e)}
                             title="Editar"
-                            className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors border border-blue-200"
+                            className="p-1.5 sm:p-2 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors border border-blue-200"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setDeleteEnterprise(e)}
                             title="Remover"
-                            className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-colors border border-red-200"
+                            className="p-1.5 sm:p-2 rounded-xl text-red-500 hover:bg-red-50 transition-colors border border-red-200"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() =>
                               setExpandedEnterprise(
-                                expandedEnterprise === e.id ? null : e.id
+                                expandedEnterprise === e.id ? null : e.id,
                               )
                             }
-                            className="p-2 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors"
+                            className="p-1.5 sm:p-2 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors"
                           >
                             {expandedEnterprise === e.id ? (
                               <ChevronUp className="w-4 h-4" />
@@ -1255,7 +1354,8 @@ export function AdminPanel() {
                               onClick={() => setShowAddProduct(e.id)}
                               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white shadow-sm"
                               style={{
-                                background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                                background:
+                                  "linear-gradient(135deg, #7C3AED, #EA580C)",
                                 fontFamily: "Nunito, sans-serif",
                               }}
                             >
@@ -1287,7 +1387,10 @@ export function AdminPanel() {
                                   <div className="flex-1 min-w-0">
                                     <p
                                       className="text-gray-800 truncate text-sm"
-                                      style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+                                      style={{
+                                        fontFamily: "Nunito, sans-serif",
+                                        fontWeight: 700,
+                                      }}
                                     >
                                       {p.name}
                                     </p>
@@ -1303,7 +1406,10 @@ export function AdminPanel() {
                                   <div className="flex items-center gap-1">
                                     <button
                                       onClick={() =>
-                                        setEditProduct({ enterpriseId: e.id, product: p })
+                                        setEditProduct({
+                                          enterpriseId: e.id,
+                                          product: p,
+                                        })
                                       }
                                       className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors"
                                     >
@@ -1311,7 +1417,10 @@ export function AdminPanel() {
                                     </button>
                                     <button
                                       onClick={() =>
-                                        setDeleteProduct({ enterpriseId: e.id, product: p })
+                                        setDeleteProduct({
+                                          enterpriseId: e.id,
+                                          product: p,
+                                        })
                                       }
                                       className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
                                     >
@@ -1333,49 +1442,68 @@ export function AdminPanel() {
             {/* ── USERS TAB ─────────────────────────────────────────── */}
             {tab === "users" && (
               <div>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
                   <h1
-                    className="text-gray-900"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1.6rem" }}
+                    className="text-gray-900 text-xl sm:text-2xl lg:text-3xl"
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 800,
+                    }}
                   >
                     Gestão de Usuários
                   </h1>
                   <button
                     onClick={() => setShowAddUser(true)}
-                    className={btnPrimary}
-                    style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
+                    className={btnPrimary + " text-sm"}
+                    style={{
+                      background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                    }}
                   >
                     <Plus className="w-4 h-4" />
-                    Novo usuário
+                    <span className="hidden sm:inline">Novo usuário</span>
+                    <span className="sm:hidden">Novo</span>
                   </button>
                 </div>
 
                 {/* Owners */}
-                <div className="mb-8">
+                <div className="mb-6 sm:mb-8">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #7C3AED, #EA580C)" }} />
+                    <div
+                      className="w-1.5 h-5 rounded-full"
+                      style={{
+                        background: "linear-gradient(180deg, #7C3AED, #EA580C)",
+                      }}
+                    />
                     <h2
-                      className="text-gray-800"
-                      style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.05rem" }}
+                      className="text-gray-800 text-sm sm:text-base"
+                      style={{
+                        fontFamily: "Poppins, sans-serif",
+                        fontWeight: 700,
+                      }}
                     >
                       Donos de Empreendimentos ({ownerUsers.length})
                     </h2>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {ownerUsers.map((u) => {
                       const linked = enterprises.find(
-                        (e) => e.id === u.enterpriseId
+                        (e) => e.id === u.enterpriseId,
                       );
                       return (
                         <div
                           key={u.id}
-                          className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-4"
+                          className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap"
                         >
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
-                            style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}>
+                          <div
+                            className="w-9 sm:w-10 h-9 sm:h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #7C3AED, #EA580C)",
+                            }}
+                          >
                             {u.name.charAt(0)}
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 order-1 sm:order-none">
                             <div className="flex items-center gap-2 flex-wrap">
                               <p
                                 className="text-gray-900 font-bold text-sm"
@@ -1395,26 +1523,26 @@ export function AdminPanel() {
                               </span>
                             </div>
                             <p
-                              className="text-gray-500 text-xs"
+                              className="text-gray-500 text-xs truncate"
                               style={{ fontFamily: "Nunito, sans-serif" }}
                             >
                               {u.email}
                             </p>
                             {linked && (
                               <p
-                                className="text-purple-600 text-xs font-semibold"
+                                className="text-purple-600 text-xs font-semibold truncate"
                                 style={{ fontFamily: "Nunito, sans-serif" }}
                               >
                                 📌 {linked.name}
                               </p>
                             )}
                           </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
+                          <div className="flex items-center gap-1 flex-shrink-0 ml-auto sm:ml-0">
                             <button
                               onClick={() =>
                                 updateUser(u.id, { active: !u.active })
                               }
-                              className={`p-2 rounded-xl border transition-colors ${
+                              className={`p-1.5 sm:p-2 rounded-xl border transition-colors ${
                                 u.active
                                   ? "text-orange-500 border-orange-200 hover:bg-orange-50"
                                   : "text-green-500 border-green-200 hover:bg-green-50"
@@ -1422,22 +1550,22 @@ export function AdminPanel() {
                               title={u.active ? "Desativar" : "Ativar"}
                             >
                               {u.active ? (
-                                <UserX className="w-4 h-4" />
+                                <UserX className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                               ) : (
-                                <UserCheck className="w-4 h-4" />
+                                <UserCheck className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                               )}
                             </button>
                             <button
                               onClick={() => setEditUser(u)}
-                              className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 border border-blue-200 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-xl text-blue-600 hover:bg-blue-50 border border-blue-200 transition-colors"
                             >
-                              <Pencil className="w-4 h-4" />
+                              <Pencil className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                             </button>
                             <button
                               onClick={() => setDeleteUser(u)}
-                              className="p-2 rounded-xl text-red-500 hover:bg-red-50 border border-red-200 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-xl text-red-500 hover:bg-red-50 border border-red-200 transition-colors"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                             </button>
                           </div>
                         </div>
@@ -1457,26 +1585,39 @@ export function AdminPanel() {
                 {/* Admins */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-1.5 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #2563EB, #7C3AED)" }} />
+                    <div
+                      className="w-1.5 h-5 rounded-full"
+                      style={{
+                        background: "linear-gradient(180deg, #2563EB, #7C3AED)",
+                      }}
+                    />
                     <h2
-                      className="text-gray-800"
-                      style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.05rem" }}
+                      className="text-gray-800 text-sm sm:text-base"
+                      style={{
+                        fontFamily: "Poppins, sans-serif",
+                        fontWeight: 700,
+                      }}
                     >
                       Administradores ({adminUsers.length})
                     </h2>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {adminUsers.map((u) => (
                       <div
                         key={u.id}
-                        className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-4"
+                        className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:p-4 flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap"
                       >
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
-                          style={{ background: "linear-gradient(135deg, #2563EB, #7C3AED)" }}>
+                        <div
+                          className="w-9 sm:w-10 h-9 sm:h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #2563EB, #7C3AED)",
+                          }}
+                        >
                           {u.name.charAt(0)}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
+                        <div className="flex-1 min-w-0 order-1 sm:order-none">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <p
                               className="text-gray-900 font-bold text-sm"
                               style={{ fontFamily: "Nunito, sans-serif" }}
@@ -1491,25 +1632,25 @@ export function AdminPanel() {
                             </span>
                           </div>
                           <p
-                            className="text-gray-500 text-xs"
+                            className="text-gray-500 text-xs truncate"
                             style={{ fontFamily: "Nunito, sans-serif" }}
                           >
                             {u.email}
                           </p>
                         </div>
                         {u.id !== user.id && (
-                          <div className="flex items-center gap-1 flex-shrink-0">
+                          <div className="flex items-center gap-1 flex-shrink-0 ml-auto sm:ml-0">
                             <button
                               onClick={() => setEditUser(u)}
-                              className="p-2 rounded-xl text-blue-600 hover:bg-blue-50 border border-blue-200 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-xl text-blue-600 hover:bg-blue-50 border border-blue-200 transition-colors"
                             >
-                              <Pencil className="w-4 h-4" />
+                              <Pencil className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                             </button>
                             <button
                               onClick={() => setDeleteUser(u)}
-                              className="p-2 rounded-xl text-red-500 hover:bg-red-50 border border-red-200 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-xl text-red-500 hover:bg-red-50 border border-red-200 transition-colors"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                             </button>
                           </div>
                         )}
@@ -1526,7 +1667,10 @@ export function AdminPanel() {
       {/* ── MODALS ─────────────────────────────────────────────────────── */}
 
       {showAddEnterprise && (
-        <Modal title="Novo Empreendimento" onClose={() => setShowAddEnterprise(false)}>
+        <Modal
+          title="Novo Empreendimento"
+          onClose={() => setShowAddEnterprise(false)}
+        >
           <EnterpriseForm
             onSave={handleAddEnterprise}
             onClose={() => setShowAddEnterprise(false)}
@@ -1558,10 +1702,7 @@ export function AdminPanel() {
       )}
 
       {showAddProduct && (
-        <Modal
-          title="Novo Produto"
-          onClose={() => setShowAddProduct(null)}
-        >
+        <Modal title="Novo Produto" onClose={() => setShowAddProduct(null)}>
           <ProductForm
             onSave={(data) => handleAddProduct(showAddProduct, data)}
             onClose={() => setShowAddProduct(null)}
