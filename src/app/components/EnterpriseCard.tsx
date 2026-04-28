@@ -25,12 +25,13 @@ export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
       className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-gray-100 flex flex-col group cursor-pointer"
     >
       {/* Image */}
-      <div className="relative overflow-hidden aspect-square bg-gray-50 p-4 flex items-center justify-center">
+      <div className="relative overflow-hidden h-52">
         <img
           src={enterprise.coverImage}
           alt={enterprise.name}
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
         {/* Category Badge */}
         <div
