@@ -18,17 +18,16 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col group">
       {/* Image */}
-      <div className="relative overflow-hidden h-44">
+      <div className="relative overflow-hidden aspect-square bg-gray-50 p-4 flex items-center justify-center">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {/* Price badge */}
         {priceLabel && (
           <div
-            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-white text-sm shadow-lg"
+            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-white text-sm shadow-lg z-10"
             style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif", fontWeight: 800 }}
           >
             {priceLabel}
