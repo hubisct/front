@@ -53,19 +53,6 @@ export function LoginPage() {
     }
   };
 
-  const demoHints = [
-    {
-      role: "Administrador",
-      email: "admin@hubis.ufsm.br",
-      password: "senhaadmin",
-    },
-    {
-      role: "Dono de Empreendimento",
-      email: "costurandosonhos@email.com",
-      password: "senhaempreendedor",
-    },
-  ];
-
   return (
     <div
       className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12 relative"
@@ -292,50 +279,6 @@ export function LoginPage() {
               </p>
             </form>
 
-            {/* Info + demo hints */}
-            <div className="mt-6 p-4 rounded-xl bg-blue-50 border border-blue-100">
-              <p
-                className="text-blue-700 text-xs mb-3"
-                style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
-              >
-                ℹ️ Acesso restrito — apenas para equipe do Hub IS e empreendedores cadastrados. Visitantes comuns não precisam fazer login.
-              </p>
-              <p
-                className="text-blue-600 text-xs mb-2"
-                style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
-              >
-                Credenciais de demonstração:
-              </p>
-              <div className="space-y-1.5">
-                {demoHints.map((hint) => (
-                  <button
-                    key={hint.role}
-                    type="button"
-                    onClick={() => {
-                      setEmail(hint.email);
-                      setPassword(hint.password);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-lg bg-white border border-blue-200 hover:border-purple-400 transition-colors"
-                  >
-                    <p
-                      className="text-purple-700 text-xs"
-                      style={{
-                        fontFamily: "Nunito, sans-serif",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {hint.role}
-                    </p>
-                    <p
-                      className="text-gray-500 text-xs"
-                      style={{ fontFamily: "Nunito, sans-serif" }}
-                    >
-                      {hint.email} / {hint.password}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
