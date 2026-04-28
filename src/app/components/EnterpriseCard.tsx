@@ -72,7 +72,7 @@ export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1.5 mt-auto">
           {enterprise.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
@@ -82,20 +82,6 @@ export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
               #{tag}
             </span>
           ))}
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-gray-100 mb-4" />
-
-        {/* CTA Text */}
-        <div
-          className="flex items-center justify-center gap-2 w-full py-3 px-5 rounded-2xl text-white font-bold shadow-md group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]"
-          style={{ background: "linear-gradient(135deg, #7C3AED 0%, #EA580C 100%)", fontFamily: "Nunito, sans-serif" }}
-        >
-          Ver catálogo
-          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
         </div>
       </div>
     </Link>
