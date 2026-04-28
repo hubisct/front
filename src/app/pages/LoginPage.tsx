@@ -55,7 +55,7 @@ export function LoginPage() {
 
   return (
     <div
-      className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12 relative"
+      className="min-h-[calc(100vh-64px)] flex items-center md:items-start justify-center px-4 py-12 md:pt-20 relative"
       style={{
         background:
           "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 50%, #EFF6FF 100%)",
