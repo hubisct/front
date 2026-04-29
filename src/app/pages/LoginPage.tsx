@@ -48,7 +48,7 @@ export function LoginPage() {
     setLoading(false);
     if (!success) {
       setError(
-        "E-mail ou senha incorretos. Verifique seus dados e tente novamente."
+        "E-mail ou senha incorretos. Verifique seus dados e tente novamente.",
       );
     }
   };
@@ -109,11 +109,11 @@ export function LoginPage() {
             }}
           >
             <div className="flex justify-center mb-4">
-              <div className="h-14 bg-white/10 rounded-2xl px-3 flex items-center">
+              <div className="h-18 bg-white/80 rounded-2xl px-3 flex items-center">
                 <ImageWithFallback
-                  src="/logo-hubis.jpg"
+                  src="/logo-hubis.png"
                   alt="HUB IS"
-                  className="h-10 w-auto object-contain"
+                  className="h-14 w-auto object-contain"
                 />
               </div>
             </div>
@@ -158,17 +158,27 @@ export function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     onBlur={() => {
                       if (!email) setEmailError("E-mail obrigatório");
-                      else if (!isValidEmail(email)) setEmailError("E-mail inválido");
+                      else if (!isValidEmail(email))
+                        setEmailError("E-mail inválido");
                       else setEmailError("");
                     }}
                     required
                     placeholder="seu@email.com"
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-gray-50 focus:bg-white"
-                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 600,
+                    }}
                   />
                 </div>
                 {emailError && (
-                  <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+                  <p
+                    className="text-red-600 text-sm mt-1"
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 700,
+                    }}
+                  >
                     {emailError}
                   </p>
                 )}
@@ -194,13 +204,19 @@ export function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     onBlur={() => {
                       if (!password) setPasswordError("Senha obrigatória");
-                      else if (!isValidPassword(password)) setPasswordError("Senha deve ter ao menos 10 caracteres");
+                      else if (!isValidPassword(password))
+                        setPasswordError(
+                          "Senha deve ter ao menos 10 caracteres",
+                        );
                       else setPasswordError("");
                     }}
                     required
                     placeholder="••••••••"
                     className="w-full pl-11 pr-11 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-gray-50 focus:bg-white"
-                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 600,
+                    }}
                   />
                   <button
                     type="button"
@@ -215,7 +231,13 @@ export function LoginPage() {
                   </button>
                 </div>
                 {passwordError && (
-                  <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+                  <p
+                    className="text-red-600 text-sm mt-1"
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 700,
+                    }}
+                  >
                     {passwordError}
                   </p>
                 )}
@@ -229,7 +251,10 @@ export function LoginPage() {
                   </div>
                   <p
                     className="text-red-700 text-sm"
-                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 600,
+                    }}
                   >
                     {error}
                   </p>
@@ -298,7 +323,9 @@ export function LoginPage() {
                 className="text-blue-700 text-xs mb-3"
                 style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
               >
-                ℹ️ Acesso restrito — apenas para equipe do Hub IS e empreendedores cadastrados. Visitantes comuns não precisam fazer login.
+                ℹ️ Acesso restrito — apenas para equipe do Hub IS e
+                empreendedores cadastrados. Visitantes comuns não precisam fazer
+                login.
               </p>
               <p
                 className="text-blue-600 text-xs mb-2"

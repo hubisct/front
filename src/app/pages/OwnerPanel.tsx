@@ -34,12 +34,19 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
           <h3
             className="text-gray-900"
-            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.05rem" }}
+            style={{
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 700,
+              fontSize: "1.05rem",
+            }}
           >
             {title}
           </h3>
@@ -56,12 +63,22 @@ function Modal({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <label
         className="block text-gray-700 mb-1"
-        style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700, fontSize: "0.85rem" }}
+        style={{
+          fontFamily: "Nunito, sans-serif",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+        }}
       >
         {label}
       </label>
@@ -84,12 +101,18 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onCancel}
+      />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
         <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-6 h-6 text-red-600" />
         </div>
-        <p className="text-gray-800 mb-6" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}>
+        <p
+          className="text-gray-800 mb-6"
+          style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+        >
           {message}
         </p>
         <div className="flex gap-3">
@@ -128,9 +151,16 @@ function ProductForm({
     name: initial?.name || "",
     description: initial?.description || "",
     priceMode: initialPriceMode,
-    price: initialPriceMode === "single" ? initial?.price?.toString() || "" : "",
-    priceMin: initialPriceMode === "range" ? initial?.priceMin?.toString() || initial?.price?.toString() || "" : "",
-    priceMax: initialPriceMode === "range" ? initial?.priceMax?.toString() || initial?.price?.toString() || "" : "",
+    price:
+      initialPriceMode === "single" ? initial?.price?.toString() || "" : "",
+    priceMin:
+      initialPriceMode === "range"
+        ? initial?.priceMin?.toString() || initial?.price?.toString() || ""
+        : "",
+    priceMax:
+      initialPriceMode === "range"
+        ? initial?.priceMax?.toString() || initial?.price?.toString() || ""
+        : "",
     image: initial?.image || "",
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -152,7 +182,10 @@ function ProductForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {productNameError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {productNameError}
           </p>
         )}
@@ -229,12 +262,18 @@ function ProductForm({
         </div>
       )}
       {productPriceError && (
-        <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+        <p
+          className="text-red-600 text-sm mt-1"
+          style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+        >
           {productPriceError}
         </p>
       )}
       <Field label="Imagem do produto">
-        <ImageUploadField value={form.image} onChange={(value) => set("image", value)} />
+        <ImageUploadField
+          value={form.image}
+          onChange={(value) => set("image", value)}
+        />
       </Field>
       <div className="flex gap-3 pt-2">
         <button
@@ -271,12 +310,19 @@ function ProductForm({
               }
               const min = parseFloat(form.priceMin);
               const max = parseFloat(form.priceMax);
-              if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
+              if (
+                Number.isNaN(min) ||
+                Number.isNaN(max) ||
+                min < 0 ||
+                max < 0
+              ) {
                 setProductPriceError("Informe uma faixa válida");
                 return;
               }
               if (min > max) {
-                setProductPriceError("O mínimo não pode ser maior que o máximo");
+                setProductPriceError(
+                  "O mínimo não pode ser maior que o máximo",
+                );
                 return;
               }
               onSave({
@@ -299,7 +345,10 @@ function ProductForm({
             });
           }}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md transition-all hover:scale-[1.01]"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+          style={{
+            background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+            fontFamily: "Nunito, sans-serif",
+          }}
         >
           <Check className="w-4 h-4" />
           Salvar produto
@@ -350,26 +399,38 @@ function EnterpriseEditForm({
 
   return (
     <div className="space-y-4">
-        <Field label="Nome do empreendimento *">
-          <input
-            className={inputCls}
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-            onBlur={() => {
-              if (!form.name) setNameError("Campo obrigatório");
-              else setNameError("");
-            }}
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          />
-          {nameError && (
-            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
-              {nameError}
-            </p>
-          )}
-        </Field>
+      <Field label="Nome do empreendimento *">
+        <input
+          className={inputCls}
+          value={form.name}
+          onChange={(e) => set("name", e.target.value)}
+          onBlur={() => {
+            if (!form.name) setNameError("Campo obrigatório");
+            else setNameError("");
+          }}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
+        {nameError && (
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
+            {nameError}
+          </p>
+        )}
+      </Field>
       <Field label="Categoria *">
-          <select className={inputCls} value={form.category} onChange={(e) => set("category", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }}>
-          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        <select
+          className={inputCls}
+          value={form.category}
+          onChange={(e) => set("category", e.target.value)}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
         </select>
       </Field>
       <Field label="Descrição curta *">
@@ -385,13 +446,22 @@ function EnterpriseEditForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {descriptionError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {descriptionError}
           </p>
         )}
       </Field>
       <Field label="Descrição completa">
-        <textarea className={inputCls} value={form.fullDescription} onChange={(e) => set("fullDescription", e.target.value)} rows={3} style={{ fontFamily: "Nunito, sans-serif" }} />
+        <textarea
+          className={inputCls}
+          value={form.fullDescription}
+          onChange={(e) => set("fullDescription", e.target.value)}
+          rows={3}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
       </Field>
       <Field label="Imagem de capa">
         <ImageUploadField
@@ -411,19 +481,30 @@ function EnterpriseEditForm({
             onChange={(e) => set("whatsapp", e.target.value)}
             onBlur={(e) => {
               const v = e.target.value;
-              if (v && !isValidBrazilPhone(v)) setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              if (v && !isValidBrazilPhone(v))
+                setWhatsappError(
+                  "Telefone inválido, use DDD + número (ex: 55999999999)",
+                );
               else setWhatsappError("");
             }}
             style={{ fontFamily: "Nunito, sans-serif" }}
           />
           {whatsappError && (
-            <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+            <p
+              className="text-red-600 text-sm mt-1"
+              style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+            >
               {whatsappError}
             </p>
           )}
         </Field>
         <Field label="Instagram">
-          <input className={inputCls} value={form.instagram} onChange={(e) => set("instagram", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
+          <input
+            className={inputCls}
+            value={form.instagram}
+            onChange={(e) => set("instagram", e.target.value)}
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          />
         </Field>
       </div>
       <Field label="E-mail">
@@ -439,13 +520,21 @@ function EnterpriseEditForm({
           style={{ fontFamily: "Nunito, sans-serif" }}
         />
         {emailError && (
-          <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
             {emailError}
           </p>
         )}
       </Field>
       <Field label="Tags (separadas por vírgula)">
-        <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} style={{ fontFamily: "Nunito, sans-serif" }} />
+        <input
+          className={inputCls}
+          value={form.tags}
+          onChange={(e) => set("tags", e.target.value)}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
       </Field>
       <div className="flex gap-3 pt-2">
         <button
@@ -457,22 +546,34 @@ function EnterpriseEditForm({
               return;
             }
             if (form.whatsapp && !isValidBrazilPhone(form.whatsapp)) {
-              setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
+              setWhatsappError(
+                "Telefone inválido, use DDD + número (ex: 55999999999)",
+              );
               return;
             }
             onSave({
               ...form,
-              tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+              tags: form.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean),
               category: form.category as Category,
             });
           }}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+          style={{
+            background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+            fontFamily: "Nunito, sans-serif",
+          }}
         >
           <Check className="w-4 h-4" />
           Salvar alterações
         </button>
-        <button onClick={onClose} className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 border-gray-200 text-gray-600 hover:bg-gray-50" style={{ fontFamily: "Nunito, sans-serif" }}>
+        <button
+          onClick={onClose}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 border-gray-200 text-gray-600 hover:bg-gray-50"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
           Cancelar
         </button>
       </div>
@@ -498,7 +599,9 @@ export function OwnerPanel() {
   const [editingEnterprise, setEditingEnterprise] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [editProductData, setEditProductData] = useState<Product | null>(null);
-  const [deleteProductData, setDeleteProductData] = useState<Product | null>(null);
+  const [deleteProductData, setDeleteProductData] = useState<Product | null>(
+    null,
+  );
 
   // Protect route
   useEffect(() => {
@@ -506,22 +609,32 @@ export function OwnerPanel() {
     else if (!isOwner) navigate("/admin");
   }, [user, isOwner, navigate]);
 
-  if (!user || !isOwner || !myEnterprise) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-gray-600 mb-4" style={{ fontFamily: "Nunito, sans-serif" }}>
-          Você não está vinculado a nenhum empreendimento.
-        </p>
-        <button
-          onClick={() => { logout(); navigate("/"); }}
-          className="px-6 py-3 rounded-xl text-white font-bold"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
-        >
-          Voltar ao site
-        </button>
+  if (!user || !isOwner || !myEnterprise)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p
+            className="text-gray-600 mb-4"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            Você não está vinculado a nenhum empreendimento.
+          </p>
+          <button
+            onClick={() => {
+              logout();
+              navigate("/");
+            }}
+            className="px-6 py-3 rounded-xl text-white font-bold"
+            style={{
+              background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+              fontFamily: "Nunito, sans-serif",
+            }}
+          >
+            Voltar ao site
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
 
   const e = myEnterprise;
 
@@ -557,7 +670,10 @@ export function OwnerPanel() {
       {/* Accent bar */}
       <div
         className="h-1.5 w-full"
-        style={{ background: "linear-gradient(90deg, #7C3AED, #EA580C, #FBBF24, #2563EB)" }}
+        style={{
+          background:
+            "linear-gradient(90deg, #7C3AED, #EA580C, #FBBF24, #2563EB)",
+        }}
       />
 
       {/* Top nav bar */}
@@ -565,7 +681,11 @@ export function OwnerPanel() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/">
-              <ImageWithFallback src="/logo-hubis.jpg" alt="HUB IS" className="h-8 w-auto object-contain" />
+              <ImageWithFallback
+                src="/logo-hubis.png"
+                alt="HUB IS"
+                className="h-8 w-auto object-contain"
+              />
             </Link>
             <div className="hidden sm:flex items-center gap-2">
               <span className="text-gray-300">|</span>
@@ -593,7 +713,10 @@ export function OwnerPanel() {
               <span className="hidden sm:inline">Site</span>
             </Link>
             <button
-              onClick={() => { logout(); navigate("/"); }}
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-sm font-bold transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
@@ -609,11 +732,18 @@ export function OwnerPanel() {
         <div className="mb-6">
           <h1
             className="text-gray-900 mb-1"
-            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1.6rem" }}
+            style={{
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 800,
+              fontSize: "1.6rem",
+            }}
           >
             Meu Painel
           </h1>
-          <p className="text-gray-500 text-sm" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}>
+          <p
+            className="text-gray-500 text-sm"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+          >
             Gerencie seu empreendimento e catálogo de produtos
           </p>
         </div>
@@ -627,7 +757,13 @@ export function OwnerPanel() {
               alt={e.name}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)" }} />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+              }}
+            />
             <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
               <div>
                 <span
@@ -638,7 +774,12 @@ export function OwnerPanel() {
                 </span>
                 <h2
                   className="text-white"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1.3rem", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 800,
+                    fontSize: "1.3rem",
+                    textShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                  }}
                 >
                   {e.name}
                 </h2>
@@ -647,7 +788,10 @@ export function OwnerPanel() {
                 <button
                   onClick={() => exportCatalogPDF(e)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
-                  style={{ background: "rgba(124,58,237,0.7)", fontFamily: "Nunito, sans-serif" }}
+                  style={{
+                    background: "rgba(124,58,237,0.7)",
+                    fontFamily: "Nunito, sans-serif",
+                  }}
                 >
                   <FileDown className="w-4 h-4" />
                   Baixar PDF
@@ -655,7 +799,10 @@ export function OwnerPanel() {
                 <button
                   onClick={() => setEditingEnterprise(true)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
-                  style={{ background: "rgba(234,88,12,0.7)", fontFamily: "Nunito, sans-serif" }}
+                  style={{
+                    background: "rgba(234,88,12,0.7)",
+                    fontFamily: "Nunito, sans-serif",
+                  }}
                 >
                   <Pencil className="w-4 h-4" />
                   Editar
@@ -688,18 +835,40 @@ export function OwnerPanel() {
                 Contatos
               </p>
               {[
-                { label: "WhatsApp", value: `+${e.whatsapp}`, color: "text-green-600" },
-                { label: "Instagram", value: e.instagram, color: "text-pink-600" },
-                ...(e.email ? [{ label: "E-mail", value: e.email, color: "text-blue-600" }] : []),
+                {
+                  label: "WhatsApp",
+                  value: `+${e.whatsapp}`,
+                  color: "text-green-600",
+                },
+                {
+                  label: "Instagram",
+                  value: e.instagram,
+                  color: "text-pink-600",
+                },
+                ...(e.email
+                  ? [
+                      {
+                        label: "E-mail",
+                        value: e.email,
+                        color: "text-blue-600",
+                      },
+                    ]
+                  : []),
               ].map((c) => (
                 <div key={c.label} className="flex items-center gap-2 text-sm">
                   <span
                     className="text-gray-500 w-20 flex-shrink-0"
-                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontWeight: 700,
+                    }}
                   >
                     {c.label}:
                   </span>
-                  <span className={`${c.color} font-semibold`} style={{ fontFamily: "Nunito, sans-serif" }}>
+                  <span
+                    className={`${c.color} font-semibold`}
+                    style={{ fontFamily: "Nunito, sans-serif" }}
+                  >
                     {c.value}
                   </span>
                 </div>
@@ -751,10 +920,19 @@ export function OwnerPanel() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #7C3AED, #EA580C)" }} />
+                <div
+                  className="w-1 h-5 rounded-full"
+                  style={{
+                    background: "linear-gradient(180deg, #7C3AED, #EA580C)",
+                  }}
+                />
                 <h2
                   className="text-gray-900"
-                  style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.1rem" }}
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                  }}
                 >
                   Catálogo de Produtos
                 </h2>
@@ -763,13 +941,17 @@ export function OwnerPanel() {
                 className="text-gray-500 text-xs"
                 style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
               >
-                {e.products.length} produto{e.products.length !== 1 ? "s" : ""} cadastrado{e.products.length !== 1 ? "s" : ""}
+                {e.products.length} produto{e.products.length !== 1 ? "s" : ""}{" "}
+                cadastrado{e.products.length !== 1 ? "s" : ""}
               </p>
             </div>
             <button
               onClick={() => setShowAddProduct(true)}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-bold text-sm shadow-md hover:shadow-lg transition-all hover:scale-[1.01]"
-              style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+              style={{
+                background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                fontFamily: "Nunito, sans-serif",
+              }}
             >
               <Plus className="w-4 h-4" />
               Novo produto
@@ -790,7 +972,10 @@ export function OwnerPanel() {
               <button
                 onClick={() => setShowAddProduct(true)}
                 className="px-5 py-2.5 rounded-xl text-white font-bold text-sm shadow-md"
-                style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+                style={{
+                  background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                  fontFamily: "Nunito, sans-serif",
+                }}
               >
                 Adicionar primeiro produto
               </button>
@@ -814,13 +999,20 @@ export function OwnerPanel() {
                   <div className="p-4">
                     <h3
                       className="text-gray-900 mb-1"
-                      style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "0.9rem" }}
+                      style={{
+                        fontFamily: "Poppins, sans-serif",
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                      }}
                     >
                       {p.name}
                     </h3>
                     <p
                       className="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2"
-                      style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                      style={{
+                        fontFamily: "Nunito, sans-serif",
+                        fontWeight: 600,
+                      }}
                     >
                       {p.description}
                     </p>
@@ -828,7 +1020,10 @@ export function OwnerPanel() {
                       {getProductPriceLabel(p) ? (
                         <span
                           className="text-purple-700 font-black"
-                          style={{ fontFamily: "Poppins, sans-serif", fontSize: "1rem" }}
+                          style={{
+                            fontFamily: "Poppins, sans-serif",
+                            fontSize: "1rem",
+                          }}
                         >
                           {getProductPriceLabel(p)}
                         </span>
@@ -860,7 +1055,10 @@ export function OwnerPanel() {
 
       {/* ── MODALS ─────────────────────────────────────────────────────── */}
       {editingEnterprise && (
-        <Modal title="Editar Empreendimento" onClose={() => setEditingEnterprise(false)}>
+        <Modal
+          title="Editar Empreendimento"
+          onClose={() => setEditingEnterprise(false)}
+        >
           <EnterpriseEditForm
             enterprise={{
               name: e.name,
@@ -890,7 +1088,10 @@ export function OwnerPanel() {
       )}
 
       {editProductData && (
-        <Modal title={`Editar: ${editProductData.name}`} onClose={() => setEditProductData(null)}>
+        <Modal
+          title={`Editar: ${editProductData.name}`}
+          onClose={() => setEditProductData(null)}
+        >
           <ProductForm
             initial={editProductData}
             onSave={handleEditProduct}
