@@ -26,7 +26,11 @@ import type { Enterprise, Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
-import { isValidEmail, isValidPassword, isValidBrazilPhone } from "../utils/validation";
+import {
+  isValidEmail,
+  isValidPassword,
+  isValidBrazilPhone,
+} from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 
 type Tab = "dashboard" | "enterprises" | "users";
@@ -347,9 +351,16 @@ function ProductForm({
     name: initial?.name || "",
     description: initial?.description || "",
     priceMode: initialPriceMode,
-    price: initialPriceMode === "single" ? initial?.price?.toString() || "" : "",
-    priceMin: initialPriceMode === "range" ? initial?.priceMin?.toString() || initial?.price?.toString() || "" : "",
-    priceMax: initialPriceMode === "range" ? initial?.priceMax?.toString() || initial?.price?.toString() || "" : "",
+    price:
+      initialPriceMode === "single" ? initial?.price?.toString() || "" : "",
+    priceMin:
+      initialPriceMode === "range"
+        ? initial?.priceMin?.toString() || initial?.price?.toString() || ""
+        : "",
+    priceMax:
+      initialPriceMode === "range"
+        ? initial?.priceMax?.toString() || initial?.price?.toString() || ""
+        : "",
     image: initial?.image || "",
   });
 
@@ -514,7 +525,10 @@ function ProductForm({
         </div>
       )}
       {productPriceError && (
-        <p className="text-red-600 text-sm mt-1" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}>
+        <p
+          className="text-red-600 text-sm mt-1"
+          style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+        >
           {productPriceError}
         </p>
       )}
@@ -942,7 +956,7 @@ export function AdminPanel() {
           <div className="p-5 border-b border-gray-100">
             <Link to="/">
               <ImageWithFallback
-                src="/logo-hubis.jpg"
+                src="/logo-hubis.png"
                 alt="HUB IS"
                 className="h-10 w-auto object-contain"
               />
@@ -1028,7 +1042,7 @@ export function AdminPanel() {
           <div className="md:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
             <Link to="/">
               <ImageWithFallback
-                src="/logo-hubis.jpg"
+                src="/logo-hubis.png"
                 alt="HUB IS"
                 className="h-8 w-auto"
               />
@@ -1397,7 +1411,9 @@ export function AdminPanel() {
                                     {getProductPriceLabel(p) && (
                                       <p
                                         className="text-purple-600 text-xs font-bold"
-                                        style={{ fontFamily: "Nunito, sans-serif" }}
+                                        style={{
+                                          fontFamily: "Nunito, sans-serif",
+                                        }}
                                       >
                                         {getProductPriceLabel(p)}
                                       </p>

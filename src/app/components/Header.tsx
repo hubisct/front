@@ -31,9 +31,9 @@ export function Header() {
             className="flex items-center cursor-pointer"
             onClick={() => setMenuOpen(false)}
           >
-            <div className="h-10 md:h-12 overflow-hidden">
+            <div className="h-14 md:h-16 overflow-hidden">
               <ImageWithFallback
-                src="/logo-hubis.jpg"
+                src="/logo-hubis.png"
                 alt="HUB IS - Incubadora Social UFSM"
                 className="h-full w-auto object-contain"
               />
@@ -88,7 +88,9 @@ export function Header() {
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200">
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                    style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
+                    style={{
+                      background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                    }}
                   >
                     {user.name.charAt(0)}
                   </div>
@@ -114,7 +116,8 @@ export function Header() {
                 to="/login"
                 className="ml-2 flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white font-bold text-sm shadow-md hover:shadow-lg transition-all hover:scale-105 active:scale-95"
                 style={{
-                  background: "linear-gradient(135deg, #7C3AED 0%, #EA580C 100%)",
+                  background:
+                    "linear-gradient(135deg, #7C3AED 0%, #EA580C 100%)",
                   fontFamily: "Nunito, sans-serif",
                 }}
               >
@@ -130,7 +133,11 @@ export function Header() {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
           >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {menuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
@@ -207,7 +214,8 @@ export function Header() {
                 to="/login"
                 className="mt-1 flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-white font-bold text-sm text-center shadow-md"
                 style={{
-                  background: "linear-gradient(135deg, #7C3AED 0%, #EA580C 100%)",
+                  background:
+                    "linear-gradient(135deg, #7C3AED 0%, #EA580C 100%)",
                   fontFamily: "Nunito, sans-serif",
                 }}
                 onClick={() => setMenuOpen(false)}
