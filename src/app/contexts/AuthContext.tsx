@@ -35,7 +35,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem("authUser");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [users, setUsers] = useState<User[]>([]);
   const [enterprises, setEnterprises] = useState<Enterprise[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -70,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await api.login(email, password);
       if (res && res.email) {
         setUser(res as User);
+        localStorage.setItem("authUser", JSON.stringify(res));
         return true;
       }
     } catch (err) {
@@ -78,7 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("authUser");
+  };
 
   // Enterprise CRUD
   const addEnterprise = async (enterprise: Partial<Enterprise>) => {
