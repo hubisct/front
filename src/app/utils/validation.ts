@@ -8,9 +8,14 @@ export function isValidPassword(pw: string) {
   return typeof pw === "string" && pw.length >= 10;
 }
 
+export function normalizeBrazilPhone(phone: string) {
+  if (!phone) return "";
+  return phone.trim().replace(/\D/g, "");
+}
+
 export function isValidBrazilPhone(phone: string) {
   if (!phone) return false;
-  const digits = phone.replace(/\D/g, "");
+  const digits = normalizeBrazilPhone(phone);
   const len = digits.length;
   // Accept DDD+number (10 or 11) optionally prefixed with country code 55 (12 or 13)
   if (![10, 11, 12, 13].includes(len)) return false;

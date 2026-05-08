@@ -1,6 +1,7 @@
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "../types";
 import { getProductPriceLabel } from "../utils/pricing";
+import { normalizeBrazilPhone } from "../utils/validation";
 
 interface ProductCardProps {
   product: Product;
@@ -9,10 +10,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardProps) {
+  const normalizedWhatsapp = normalizeBrazilPhone(whatsapp);
   const whatsappMessage = encodeURIComponent(
     `Olá! Vi o produto "${product.name}" da ${enterpriseName} na Vitrine Social da Incubadora UFSM e tenho interesse. Pode me dar mais informações?`
   );
-  const whatsappUrl = `https://wa.me/${whatsapp}?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${normalizedWhatsapp}?text=${whatsappMessage}`;
   const priceLabel = getProductPriceLabel(product);
 
   return (

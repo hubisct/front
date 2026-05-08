@@ -18,7 +18,11 @@ import type { Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
-import { isValidEmail, isValidBrazilPhone } from "../utils/validation";
+import {
+  isValidEmail,
+  isValidBrazilPhone,
+  normalizeBrazilPhone,
+} from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
@@ -478,9 +482,11 @@ function EnterpriseEditForm({
           <input
             className={inputCls}
             value={form.whatsapp}
-            onChange={(e) => set("whatsapp", e.target.value)}
+            onChange={(e) =>
+              set("whatsapp", normalizeBrazilPhone(e.target.value))
+            }
             onBlur={(e) => {
-              const v = e.target.value;
+              const v = normalizeBrazilPhone(e.target.value);
               if (v && !isValidBrazilPhone(v))
                 setWhatsappError(
                   "Telefone inválido, use DDD + número (ex: 55999999999)",
@@ -541,11 +547,12 @@ function EnterpriseEditForm({
           onClick={() => {
             setEmailError("");
             setWhatsappError("");
+            const normalizedWhatsapp = normalizeBrazilPhone(form.whatsapp);
             if (form.email && !isValidEmail(form.email)) {
               setEmailError("E-mail inválido");
               return;
             }
-            if (form.whatsapp && !isValidBrazilPhone(form.whatsapp)) {
+            if (normalizedWhatsapp && !isValidBrazilPhone(normalizedWhatsapp)) {
               setWhatsappError(
                 "Telefone inválido, use DDD + número (ex: 55999999999)",
               );
@@ -553,6 +560,7 @@ function EnterpriseEditForm({
             }
             onSave({
               ...form,
+              whatsapp: normalizedWhatsapp,
               tags: form.tags
                 .split(",")
                 .map((t) => t.trim())

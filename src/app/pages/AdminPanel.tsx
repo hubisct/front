@@ -30,6 +30,7 @@ import {
   isValidEmail,
   isValidPassword,
   isValidBrazilPhone,
+  normalizeBrazilPhone,
 } from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 
@@ -143,6 +144,7 @@ function EnterpriseForm({
     setWhatsappError("");
     setNameError("");
     setDescriptionError("");
+    const normalizedWhatsapp = normalizeBrazilPhone(form.whatsapp);
     if (!form.name) {
       setNameError("Campo obrigatório");
       return;
@@ -155,12 +157,13 @@ function EnterpriseForm({
       setEmailError("E-mail inválido");
       return;
     }
-    if (form.whatsapp && !isValidBrazilPhone(form.whatsapp)) {
+    if (normalizedWhatsapp && !isValidBrazilPhone(normalizedWhatsapp)) {
       setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
       return;
     }
     onSave({
       ...form,
+      whatsapp: normalizedWhatsapp,
       tags: form.tags
         .split(",")
         .map((t) => t.trim())
@@ -252,9 +255,11 @@ function EnterpriseForm({
           <input
             className={inputCls}
             value={form.whatsapp}
-            onChange={(e) => set("whatsapp", e.target.value)}
+            onChange={(e) =>
+              set("whatsapp", normalizeBrazilPhone(e.target.value))
+            }
             onBlur={(e) => {
-              const v = e.target.value;
+              const v = normalizeBrazilPhone(e.target.value);
               if (v && !isValidBrazilPhone(v))
                 setWhatsappError(
                   "Telefone inválido, use DDD + número (ex: 55999999999)",

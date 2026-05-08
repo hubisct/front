@@ -13,6 +13,7 @@ import { ProductCard } from "../components/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { useState } from "react";
+import { normalizeBrazilPhone } from "../utils/validation";
 
 export function EnterprisePage() {
   const { id } = useParams<{ id: string }>();
@@ -61,10 +62,11 @@ export function EnterprisePage() {
 
   const isLong = enterprise.description.length > 85;
   const colors = categoryColors[enterprise.category];
+  const normalizedWhatsapp = normalizeBrazilPhone(enterprise.whatsapp || "");
   const whatsappMessage = encodeURIComponent(
     `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`,
   );
-  const whatsappUrl = `https://wa.me/${enterprise.whatsapp}?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${normalizedWhatsapp}?text=${whatsappMessage}`;
 
   return (
     <div className="w-full">
@@ -254,7 +256,7 @@ export function EnterprisePage() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  whatsapp={enterprise.whatsapp}
+                  whatsapp={normalizedWhatsapp}
                   enterpriseName={enterprise.name}
                 />
               ))}
