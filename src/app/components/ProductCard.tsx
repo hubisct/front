@@ -30,15 +30,6 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
           alt={product.name}
           className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
         />
-        {/* Price badge */}
-        {priceLabel && (
-          <div
-            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-white text-sm shadow-md z-10"
-            style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif", fontWeight: 800 }}
-          >
-            {priceLabel}
-          </div>
-        )}
       </div>
 
       {/* Content */}
@@ -50,11 +41,21 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
           {product.name}
         </h4>
         <p
-          className="text-gray-500 text-sm leading-relaxed flex-1 mb-4"
+          className="text-gray-500 text-sm leading-relaxed flex-1 mb-3"
           style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
         >
           {product.description}
         </p>
+
+        {/* Price Label */}
+        {priceLabel && (
+          <div
+            className="text-gray-600 text-sm mb-4 inline-flex items-center px-2.5 py-1 rounded-md bg-gray-50 border border-gray-100 w-fit"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
+            {priceLabel}
+          </div>
+        )}
 
         {/* CTA */}
         <a
