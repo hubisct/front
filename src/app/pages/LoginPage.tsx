@@ -112,13 +112,13 @@ export function LoginPage() {
                 fontSize: "1.4rem",
               }}
             >
-              Área Restrita
+              Bem-vindo(a)
             </h1>
             <p
-              className="text-white/80 text-sm"
+              className="text-white/90 text-sm px-2"
               style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
             >
-              Acesso para administradores e empreendedores
+              Ambiente exclusivo para administradores e empreendedores
             </p>
           </div>
 
