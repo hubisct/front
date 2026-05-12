@@ -387,7 +387,7 @@ function EnterpriseEditForm({
     email?: string;
     tags: string[];
   };
-  onSave: (data: typeof enterprise) => void;
+  onSave: (data: typeof enterprise) => Promise<void> | void;
   onClose: () => void;
   categories: Category[];
 }) {
@@ -400,6 +400,32 @@ function EnterpriseEditForm({
   const [whatsappError, setWhatsappError] = useState("");
   const [nameError, setNameError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
+
+  const handleSave = async () => {
+    setEmailError("");
+    setWhatsappError("");
+    const normalizedWhatsapp = normalizeBrazilPhone(form.whatsapp);
+    if (form.email && !isValidEmail(form.email)) {
+      setEmailError("E-mail inválido");
+      throw new Error("Validation Error");
+    }
+    if (normalizedWhatsapp && !isValidBrazilPhone(normalizedWhatsapp)) {
+      setWhatsappError(
+        "Telefone inválido, use DDD + número (ex: 55999999999)",
+      );
+      throw new Error("Validation Error");
+    }
+    await onSave({
+      ...form,
+      whatsapp: normalizedWhatsapp,
+      tags: form.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      category: form.category as Category,
+    });
+    setTimeout(() => onClose(), 1200);
+  };
 
   return (
     <div className="space-y-4">
@@ -543,40 +569,12 @@ function EnterpriseEditForm({
         />
       </Field>
       <div className="flex gap-3 pt-2">
-        <button
-          onClick={() => {
-            setEmailError("");
-            setWhatsappError("");
-            const normalizedWhatsapp = normalizeBrazilPhone(form.whatsapp);
-            if (form.email && !isValidEmail(form.email)) {
-              setEmailError("E-mail inválido");
-              return;
-            }
-            if (normalizedWhatsapp && !isValidBrazilPhone(normalizedWhatsapp)) {
-              setWhatsappError(
-                "Telefone inválido, use DDD + número (ex: 55999999999)",
-              );
-              return;
-            }
-            onSave({
-              ...form,
-              whatsapp: normalizedWhatsapp,
-              tags: form.tags
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean),
-              category: form.category as Category,
-            });
-          }}
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md"
-          style={{
-            background: "linear-gradient(135deg, #7C3AED, #EA580C)",
-            fontFamily: "Nunito, sans-serif",
-          }}
-        >
-          <Check className="w-4 h-4" />
-          Salvar alterações
-        </button>
+        <SubmitButton
+          onClick={handleSave}
+          className="flex-1 py-2.5 rounded-xl text-white font-bold shadow-md hover:scale-[1.01]"
+          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
+          idleText="Salvar alterações"
+        />
         <button
           onClick={onClose}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 border-gray-200 text-gray-600 hover:bg-gray-50"
@@ -646,12 +644,12 @@ export function OwnerPanel() {
 
   const e = myEnterprise;
 
-  const handleSaveEnterprise = (data: Partial<typeof e>) => {
-    updateEnterprise(e.id, data);
-    setEditingEnterprise(false);
+  const handleSaveEnterprise = async (data: Partial<typeof e>) => {
+    const res = await updateEnterprise(e.id, data);
+    if (!res) throw new Error("Failed");
   };
 
-  const handleAddProduct = (data: Partial<Product>) => {
+  const handleAddProduct = async (data: Partial<Product>) => {
     const priceMode = resolvePriceMode(data);
     const newProduct: Product = {
       id: `${e.id}-${Date.now()}`,
@@ -663,14 +661,14 @@ export function OwnerPanel() {
       priceMax: data.priceMax,
       image: data.image || "",
     };
-    addProduct(e.id, newProduct);
-    setShowAddProduct(false);
+    const res = await addProduct(e.id, newProduct);
+    if (!res) throw new Error("Failed");
   };
 
-  const handleEditProduct = (data: Partial<Product>) => {
-    if (!editProductData) return;
-    updateProduct(e.id, editProductData.id, data);
-    setEditProductData(null);
+  const handleEditProduct = async (data: Partial<Product>) => {
+    if (!editProductData) throw new Error("Failed");
+    const res = await updateProduct(e.id, editProductData.id, data);
+    if (!res) throw new Error("Failed");
   };
 
   return (

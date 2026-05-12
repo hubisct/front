@@ -33,9 +33,9 @@ import {
   normalizeBrazilPhone,
 } from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
+import { SubmitButton } from "../components/SubmitButton";
 
 type Tab = "dashboard" | "enterprises" | "users";
-
 // ── MODAL ──────────────────────────────────────────────────────────────────
 function Modal({
   title,
@@ -116,7 +116,7 @@ function EnterpriseForm({
   categories,
 }: {
   initial?: Partial<Enterprise>;
-  onSave: (data: Partial<Enterprise>) => void;
+  onSave: (data: Partial<Enterprise>) => Promise<void> | void;
   onClose: () => void;
   categories: Category[];
 }) {
@@ -139,7 +139,7 @@ function EnterpriseForm({
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setEmailError("");
     setWhatsappError("");
     setNameError("");
@@ -147,21 +147,21 @@ function EnterpriseForm({
     const normalizedWhatsapp = normalizeBrazilPhone(form.whatsapp);
     if (!form.name) {
       setNameError("Campo obrigatório");
-      return;
+      throw new Error("Validation Error");
     }
     if (!form.description) {
       setDescriptionError("Campo obrigatório");
-      return;
+      throw new Error("Validation Error");
     }
     if (form.email && !isValidEmail(form.email)) {
       setEmailError("E-mail inválido");
-      return;
+      throw new Error("Validation Error");
     }
     if (normalizedWhatsapp && !isValidBrazilPhone(normalizedWhatsapp)) {
       setWhatsappError("Telefone inválido, use DDD + número (ex: 55999999999)");
-      return;
+      throw new Error("Validation Error");
     }
-    onSave({
+    await onSave({
       ...form,
       whatsapp: normalizedWhatsapp,
       tags: form.tags
@@ -169,6 +169,7 @@ function EnterpriseForm({
         .map((t) => t.trim())
         .filter(Boolean),
     });
+    setTimeout(() => onClose(), 1200);
   };
 
   return (
@@ -320,14 +321,12 @@ function EnterpriseForm({
         />
       </Field>
       <div className="flex gap-3 pt-2">
-        <button
+        <SubmitButton
           onClick={handleSave}
           className={btnPrimary + " flex-1"}
           style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
-        >
-          <Check className="w-4 h-4" />
-          Salvar
-        </button>
+          idleText="Salvar empreendimento"
+        />
         <button
           onClick={onClose}
           className={
@@ -348,7 +347,7 @@ function ProductForm({
   onClose,
 }: {
   initial?: Partial<Product>;
-  onSave: (data: Partial<Product>) => void;
+  onSave: (data: Partial<Product>) => Promise<void> | void;
   onClose: () => void;
 }) {
   const initialPriceMode = resolvePriceMode(initial || {});
@@ -374,48 +373,49 @@ function ProductForm({
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setProductNameError("");
     setProductPriceError("");
     if (!form.name) {
       setProductNameError("Campo obrigatório");
-      return;
+      throw new Error("Validation Error");
     }
     if (form.priceMode === "single") {
       if (!form.price) {
         setProductPriceError("Campo obrigatório");
-        return;
+        throw new Error("Validation Error");
       }
       const singlePrice = parseFloat(form.price);
       if (Number.isNaN(singlePrice) || singlePrice < 0) {
         setProductPriceError("Informe um preço válido");
-        return;
+        throw new Error("Validation Error");
       }
-      onSave({
+      await onSave({
         name: form.name,
         description: form.description,
         image: form.image,
         priceMode: "single",
         price: singlePrice,
       });
+      setTimeout(() => onClose(), 1200);
       return;
     }
     if (form.priceMode === "range") {
       if (!form.priceMin || !form.priceMax) {
         setProductPriceError("Preencha mínimo e máximo");
-        return;
+        throw new Error("Validation Error");
       }
       const min = parseFloat(form.priceMin);
       const max = parseFloat(form.priceMax);
       if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
         setProductPriceError("Informe uma faixa válida");
-        return;
+        throw new Error("Validation Error");
       }
       if (min > max) {
         setProductPriceError("O mínimo não pode ser maior que o máximo");
-        return;
+        throw new Error("Validation Error");
       }
-      onSave({
+      await onSave({
         name: form.name,
         description: form.description,
         image: form.image,
@@ -424,15 +424,17 @@ function ProductForm({
         priceMin: min,
         priceMax: max,
       });
+      setTimeout(() => onClose(), 1200);
       return;
     }
-    onSave({
+    await onSave({
       name: form.name,
       description: form.description,
       image: form.image,
       priceMode: "hidden",
       price: 0,
     });
+    setTimeout(() => onClose(), 1200);
   };
 
   return (
@@ -544,14 +546,12 @@ function ProductForm({
         />
       </Field>
       <div className="flex gap-3 pt-2">
-        <button
+        <SubmitButton
           onClick={handleSave}
           className={btnPrimary + " flex-1"}
           style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
-        >
-          <Check className="w-4 h-4" />
-          Salvar produto
-        </button>
+          idleText="Salvar produto"
+        />
         <button
           onClick={onClose}
           className={
@@ -574,7 +574,7 @@ function UserForm({
 }: {
   initial?: Partial<User>;
   enterprises: Enterprise[];
-  onSave: (data: Omit<User, "id">) => void;
+  onSave: (data: Omit<User, "id">) => Promise<void> | void;
   onClose: () => void;
 }) {
   const [form, setForm] = useState({
@@ -593,24 +593,25 @@ function UserForm({
   const set = (k: string, v: string | boolean) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setUserEmailError("");
     setUserPasswordError("");
     setUserNameError("");
     if (!form.name) {
       setUserNameError("Campo obrigatório");
-      return;
+      throw new Error("Validation Error");
     }
-    if (!form.email || !form.password) return;
+    if (!form.email || !form.password) throw new Error("Validation Error");
     if (!isValidEmail(form.email)) {
       setUserEmailError("E-mail inválido");
-      return;
+      throw new Error("Validation Error");
     }
     if (!isValidPassword(form.password)) {
       setUserPasswordError("Senha deve ter ao menos 10 caracteres");
-      return;
+      throw new Error("Validation Error");
     }
-    onSave({ ...form, role: form.role as "admin" | "owner" });
+    await onSave({ ...form, role: form.role as "admin" | "owner" });
+    setTimeout(() => onClose(), 1200);
   };
 
   return (
@@ -748,14 +749,12 @@ function UserForm({
         </span>
       </div>
       <div className="flex gap-3 pt-2">
-        <button
+        <SubmitButton
           onClick={handleSave}
           className={btnPrimary + " flex-1"}
           style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
-        >
-          <Check className="w-4 h-4" />
-          Salvar usuário
-        </button>
+          idleText="Salvar usuário"
+        />
         <button
           onClick={onClose}
           className={
@@ -876,7 +875,7 @@ export function AdminPanel() {
   const ownerUsers = users.filter((u) => u.role === "owner");
   const adminUsers = users.filter((u) => u.role === "admin");
 
-  const handleAddEnterprise = (data: Partial<Enterprise>) => {
+  const handleAddEnterprise = async (data: Partial<Enterprise>) => {
     const newEnterprise: Enterprise = {
       id: data
         .name!.toLowerCase()
@@ -893,24 +892,24 @@ export function AdminPanel() {
       tags: data.tags || [],
       products: [],
     };
-    addEnterprise(newEnterprise);
-    setShowAddEnterprise(false);
+    const res = await addEnterprise(newEnterprise);
+    if (!res) throw new Error("Failed to add enterprise");
   };
 
-  const handleEditEnterprise = (data: Partial<Enterprise>) => {
-    if (!editEnterprise) return;
-    updateEnterprise(editEnterprise.id, data);
-    setEditEnterprise(null);
+  const handleEditEnterprise = async (data: Partial<Enterprise>) => {
+    if (!editEnterprise) throw new Error("No enterprise to edit");
+    const res = await updateEnterprise(editEnterprise.id, data);
+    if (!res) throw new Error("Failed to edit enterprise");
   };
 
-  const handleDeleteEnterprise = () => {
+  const handleDeleteEnterprise = async () => {
     if (!deleteEnterprise) return;
-    removeEnterprise(deleteEnterprise.id);
+    await removeEnterprise(deleteEnterprise.id);
     setDeleteEnterprise(null);
     if (expandedEnterprise === deleteEnterprise.id) setExpandedEnterprise(null);
   };
 
-  const handleAddProduct = (enterpriseId: string, data: Partial<Product>) => {
+  const handleAddProduct = async (enterpriseId: string, data: Partial<Product>) => {
     const priceMode = resolvePriceMode(data);
     const newProduct: Product = {
       id: `${enterpriseId}-${Date.now()}`,
@@ -922,25 +921,27 @@ export function AdminPanel() {
       priceMax: data.priceMax,
       image: data.image || "",
     };
-    addProduct(enterpriseId, newProduct);
-    setShowAddProduct(null);
+    const res = await addProduct(enterpriseId, newProduct);
+    if (!res) throw new Error("Failed to add product");
+    // Removed toast here as it is now animated in the button
   };
 
-  const handleEditProduct = (data: Partial<Product>) => {
-    if (!editProduct) return;
-    updateProduct(editProduct.enterpriseId, editProduct.product.id, data);
-    setEditProduct(null);
+  const handleEditProduct = async (data: Partial<Product>) => {
+    if (!editProduct) throw new Error("No product to edit");
+    const res = await updateProduct(editProduct.enterpriseId, editProduct.product.id, data);
+    if (!res) throw new Error("Failed to edit product");
   };
 
-  const handleAddUser = (data: Omit<User, "id">) => {
-    addUser(data);
-    setShowAddUser(false);
+  const handleAddUser = async (data: Omit<User, "id">) => {
+    const res = await addUser(data);
+    if (!res) throw new Error("Failed to add user");
+    // Removed toast here as it is now animated in the button
   };
 
-  const handleEditUser = (data: Omit<User, "id">) => {
-    if (!editUser) return;
-    updateUser(editUser.id, data);
-    setEditUser(null);
+  const handleEditUser = async (data: Omit<User, "id">) => {
+    if (!editUser) throw new Error("No user to edit");
+    const res = await updateUser(editUser.id, data);
+    if (!res) throw new Error("Failed to edit user");
   };
 
   return (
