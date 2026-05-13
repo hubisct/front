@@ -994,11 +994,15 @@ export function OwnerPanel() {
                   className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
                 >
                   {p.image && (
-                    <div className="h-36 overflow-hidden">
+                    <div className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex items-center justify-center border-b border-gray-100">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center blur-2xl opacity-50 scale-125 transition-transform duration-500 group-hover:scale-[1.35]"
+                        style={{ backgroundImage: `url(${p.image})` }}
+                      />
                       <img
                         src={p.image}
                         alt={p.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
                       />
                     </div>
                   )}

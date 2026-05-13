@@ -50,8 +50,8 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
         {/* Price Label */}
         {priceLabel && (
           <div
-            className="text-gray-600 text-sm mb-4 inline-flex items-center px-2.5 py-1 rounded-md bg-gray-50 border border-gray-100 w-fit"
-            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+            className="text-purple-700 font-black mb-4"
+            style={{ fontFamily: "Poppins, sans-serif", fontSize: "1rem" }}
           >
             {priceLabel}
           </div>
