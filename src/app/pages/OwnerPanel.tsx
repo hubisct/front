@@ -589,6 +589,10 @@ function EnterpriseEditForm({
 
 // ── MAIN OWNER PANEL ───────────────────────────────────────────────────────
 export function OwnerPanel() {
+  useEffect(() => {
+    document.title = "Painel do Empreendedor | Vitrine HUBIS";
+  }, []);
+
   const navigate = useNavigate();
   const {
     user,

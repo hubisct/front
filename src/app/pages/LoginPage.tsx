@@ -6,6 +6,10 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { isValidEmail, isValidPassword } from "../utils/validation";
 
 export function LoginPage() {
+  useEffect(() => {
+      document.title = "Login | Vitrine HUBIS";
+    }, []);
+
   const navigate = useNavigate();
   const { login, user } = useAuth();
 

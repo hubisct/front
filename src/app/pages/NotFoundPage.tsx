@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import { ArrowLeft, Home } from "lucide-react";
+import { useEffect } from "react";
 
 export function NotFoundPage() {
+  useEffect(() => {
+      document.title = "404 | Vitrine HUBIS";
+    }, []);
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
       <div className="text-8xl mb-6">🔍</div>

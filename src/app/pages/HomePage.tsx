@@ -3,6 +3,7 @@ import { Search, X, Sparkles } from "lucide-react";
 import { EnterpriseCard } from "../components/EnterpriseCard";
 import type { Category } from "../types";
 import { useAuth } from "../contexts/AuthContext";
+import { useEffect } from "react";
 
 const HERO_BG = "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
@@ -16,6 +17,10 @@ const categoryIcons: Record<Category, string> = {
 };
 
 export function HomePage() {
+  useEffect(() => {
+      document.title = "Vitrine HUBIS";
+    }, []);
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | "Todas">("Todas");
   const { enterprises, categories } = useAuth();

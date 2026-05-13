@@ -14,6 +14,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { useState } from "react";
 import { normalizeBrazilPhone } from "../utils/validation";
+import { useEffect } from "react";
 
 export function EnterprisePage() {
   const { id } = useParams<{ id: string }>();

@@ -817,6 +817,10 @@ function ConfirmDialog({
 
 // ── MAIN ADMIN PANEL ───────────────────────────────────────────────────────
 export function AdminPanel() {
+  useEffect(() => {
+      document.title = "Painel do Administrador | Vitrine HUBIS";
+    }, []);
+
   const navigate = useNavigate();
   const {
     user,
