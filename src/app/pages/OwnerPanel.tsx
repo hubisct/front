@@ -12,6 +12,7 @@ import {
   Home,
   Store,
   ExternalLink,
+  QrCode,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import type { Product, Category } from "../types";
@@ -24,6 +25,7 @@ import {
   normalizeBrazilPhone,
 } from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
+import QRCode from "react-qr-code";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
 
@@ -612,6 +614,7 @@ export function OwnerPanel() {
   const [deleteProductData, setDeleteProductData] = useState<Product | null>(
     null,
   );
+  const [showQrCode, setShowQrCode] = useState(false);
 
   // Protect route
   useEffect(() => {
@@ -774,7 +777,7 @@ export function OwnerPanel() {
                   "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
               }}
             />
-            <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
+            <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
               <div>
                 <span
                   className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-white/20 text-white border border-white/30 mb-2 backdrop-blur-sm"
@@ -794,10 +797,10 @@ export function OwnerPanel() {
                   {e.name}
                 </h2>
               </div>
-              <div className="flex gap-2">
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => exportCatalogPDF(e)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
+                  className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
                   style={{
                     background: "rgba(124,58,237,0.7)",
                     fontFamily: "Nunito, sans-serif",
@@ -807,8 +810,19 @@ export function OwnerPanel() {
                   Baixar PDF
                 </button>
                 <button
+                  onClick={() => setShowQrCode(true)}
+                  className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
+                  style={{
+                    background: "rgba(37,99,235,0.7)",
+                    fontFamily: "Nunito, sans-serif",
+                  }}
+                >
+                  <QrCode className="w-4 h-4" />
+                  QR Code
+                </button>
+                <button
                   onClick={() => setEditingEnterprise(true)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
+                  className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
                   style={{
                     background: "rgba(234,88,12,0.7)",
                     fontFamily: "Nunito, sans-serif",
@@ -1111,6 +1125,55 @@ export function OwnerPanel() {
             onSave={handleEditProduct}
             onClose={() => setEditProductData(null)}
           />
+        </Modal>
+      )}
+
+      {showQrCode && (
+        <Modal
+          title="QR Code da Página Pública"
+          onClose={() => setShowQrCode(false)}
+        >
+          <div className="flex flex-col items-center gap-5">
+            <div className="bg-white p-4 rounded-2xl border border-gray-200">
+              <QRCode
+                value={`${window.location.origin}/empreendimento/${e.id}`}
+                size={220}
+              />
+            </div>
+
+            <div className="w-full">
+              <p
+                className="text-gray-500 text-sm mb-2 text-center"
+                style={{
+                  fontFamily: "Nunito, sans-serif",
+                  fontWeight: 600,
+                }}
+              >
+                Link da página pública
+              </p>
+
+              <div className="flex gap-2">
+                <input
+                  readOnly
+                  value={`${window.location.origin}/empreendimento/${e.id}`}
+                  className={`${inputCls} flex-1`}
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                />
+
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/empreendimento/${e.id}`,
+                    );
+                  }}
+                  className="px-4 rounded-xl bg-purple-600 text-white font-bold hover:bg-purple-700 transition-colors"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
         </Modal>
       )}
 
