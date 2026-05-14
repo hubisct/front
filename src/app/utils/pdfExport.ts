@@ -1,4 +1,5 @@
 import type { Enterprise } from "../types";
+import { getPrimaryProductImage } from "./productImages";
 import { getProductPriceLabel } from "./pricing";
 
 export function exportCatalogPDF(enterprise: Enterprise): void {
@@ -100,7 +101,7 @@ function generateCatalogHTML(enterprise: Enterprise): string {
       const productName = sanitizeText(p.name) || `Produto ${i + 1}`;
       const productDescription = sanitizeText(p.description) || "Sem descrição.";
       const productPriceLabel = getProductPriceLabel(p);
-      const productImageSrc = sanitizeImageSrc(p.image);
+      const productImageSrc = sanitizeImageSrc(getPrimaryProductImage(p));
       const productImageHTML = productImageSrc
         ? `<img
             class="product-image"

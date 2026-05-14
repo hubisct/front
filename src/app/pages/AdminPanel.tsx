@@ -26,6 +26,7 @@ import type { Enterprise, Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
+import { ProductImageGalleryField } from "../components/ProductImageGalleryField";
 import {
   isValidEmail,
   isValidPassword,
@@ -33,6 +34,7 @@ import {
   normalizeBrazilPhone,
 } from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
+import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import { SubmitButton } from "../components/SubmitButton";
 
 type Tab = "dashboard" | "enterprises" | "users";
@@ -351,6 +353,7 @@ function ProductForm({
   onClose: () => void;
 }) {
   const initialPriceMode = resolvePriceMode(initial || {});
+  const initialImages = getProductImages(initial || {});
   const [form, setForm] = useState({
     name: initial?.name || "",
     description: initial?.description || "",
@@ -365,13 +368,17 @@ function ProductForm({
       initialPriceMode === "range"
         ? initial?.priceMax?.toString() || initial?.price?.toString() || ""
         : "",
-    image: initial?.image || "",
+    image: getPrimaryProductImage(initial || {}),
+    images: initialImages,
   });
 
   const [productNameError, setProductNameError] = useState("");
   const [productPriceError, setProductPriceError] = useState("");
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const setImages = (images: string[]) => {
+    setForm((f) => ({ ...f, images, image: images[0] || "" }));
+  };
 
   const handleSave = async () => {
     setProductNameError("");
@@ -394,6 +401,7 @@ function ProductForm({
         name: form.name,
         description: form.description,
         image: form.image,
+        images: form.images,
         priceMode: "single",
         price: singlePrice,
       });
@@ -419,6 +427,7 @@ function ProductForm({
         name: form.name,
         description: form.description,
         image: form.image,
+        images: form.images,
         priceMode: "range",
         price: min,
         priceMin: min,
@@ -431,6 +440,7 @@ function ProductForm({
       name: form.name,
       description: form.description,
       image: form.image,
+      images: form.images,
       priceMode: "hidden",
       price: 0,
     });
@@ -539,10 +549,10 @@ function ProductForm({
           {productPriceError}
         </p>
       )}
-      <Field label="Imagem do produto">
-        <ImageUploadField
-          value={form.image}
-          onChange={(value) => set("image", value)}
+      <Field label="Fotos do produto">
+        <ProductImageGalleryField
+          value={form.images}
+          onChange={setImages}
         />
       </Field>
       <div className="flex gap-3 pt-2">
@@ -924,6 +934,7 @@ export function AdminPanel() {
       priceMin: data.priceMin,
       priceMax: data.priceMax,
       image: data.image || "",
+      images: data.images || (data.image ? [data.image] : []),
     };
     const res = await addProduct(enterpriseId, newProduct);
     if (!res) throw new Error("Failed to add product");
@@ -1401,12 +1412,19 @@ export function AdminPanel() {
                                   key={p.id}
                                   className="flex items-center gap-3 bg-white rounded-xl p-3 border border-gray-100"
                                 >
-                                  {p.image && (
-                                    <img
-                                      src={p.image}
-                                      alt={p.name}
-                                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                                    />
+                                  {getPrimaryProductImage(p) && (
+                                    <div className="relative h-10 w-10 flex-shrink-0">
+                                      <img
+                                        src={getPrimaryProductImage(p)}
+                                        alt={p.name}
+                                        className="h-10 w-10 rounded-lg object-cover"
+                                      />
+                                      {getProductImages(p).length > 1 && (
+                                        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-purple-600 px-1 text-[10px] font-black text-white shadow">
+                                          {getProductImages(p).length}
+                                        </span>
+                                      )}
+                                    </div>
                                   )}
                                   <div className="flex-1 min-w-0">
                                     <p

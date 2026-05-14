@@ -19,12 +19,14 @@ import type { Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
+import { ProductImageGalleryField } from "../components/ProductImageGalleryField";
 import {
   isValidEmail,
   isValidBrazilPhone,
   normalizeBrazilPhone,
 } from "../utils/validation";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
+import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import QRCode from "react-qr-code";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
@@ -153,6 +155,7 @@ function ProductForm({
   onClose: () => void;
 }) {
   const initialPriceMode = resolvePriceMode(initial || {});
+  const initialImages = getProductImages(initial || {});
   const [form, setForm] = useState({
     name: initial?.name || "",
     description: initial?.description || "",
@@ -167,9 +170,13 @@ function ProductForm({
       initialPriceMode === "range"
         ? initial?.priceMax?.toString() || initial?.price?.toString() || ""
         : "",
-    image: initial?.image || "",
+    image: getPrimaryProductImage(initial || {}),
+    images: initialImages,
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const setImages = (images: string[]) => {
+    setForm((f) => ({ ...f, images, image: images[0] || "" }));
+  };
   const [productNameError, setProductNameError] = useState("");
   const [productPriceError, setProductPriceError] = useState("");
 
@@ -275,10 +282,10 @@ function ProductForm({
           {productPriceError}
         </p>
       )}
-      <Field label="Imagem do produto">
-        <ImageUploadField
-          value={form.image}
-          onChange={(value) => set("image", value)}
+      <Field label="Fotos do produto">
+        <ProductImageGalleryField
+          value={form.images}
+          onChange={setImages}
         />
       </Field>
       <div className="flex gap-3 pt-2">
@@ -304,6 +311,7 @@ function ProductForm({
                 name: form.name,
                 description: form.description,
                 image: form.image,
+                images: form.images,
                 priceMode: "single",
                 price: singlePrice,
               });
@@ -335,6 +343,7 @@ function ProductForm({
                 name: form.name,
                 description: form.description,
                 image: form.image,
+                images: form.images,
                 priceMode: "range",
                 price: min,
                 priceMin: min,
@@ -346,6 +355,7 @@ function ProductForm({
               name: form.name,
               description: form.description,
               image: form.image,
+              images: form.images,
               priceMode: "hidden",
               price: 0,
             });
@@ -667,6 +677,7 @@ export function OwnerPanel() {
       priceMin: data.priceMin,
       priceMax: data.priceMax,
       image: data.image || "",
+      images: data.images || (data.image ? [data.image] : []),
     };
     const res = await addProduct(e.id, newProduct);
     if (!res) throw new Error("Failed");
@@ -1011,17 +1022,22 @@ export function OwnerPanel() {
                   key={p.id}
                   className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
                 >
-                  {p.image && (
+                  {getPrimaryProductImage(p) && (
                     <div className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex items-center justify-center border-b border-gray-100">
                       <div
                         className="absolute inset-0 bg-cover bg-center blur-2xl opacity-50 scale-125 transition-transform duration-500 group-hover:scale-[1.35]"
-                        style={{ backgroundImage: `url(${p.image})` }}
+                        style={{ backgroundImage: `url(${getPrimaryProductImage(p)})` }}
                       />
                       <img
-                        src={p.image}
+                        src={getPrimaryProductImage(p)}
                         alt={p.name}
                         className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
                       />
+                      {getProductImages(p).length > 1 && (
+                        <span className="absolute right-2 top-2 z-20 rounded-full bg-white/95 px-2 py-1 text-xs font-bold text-purple-700 shadow">
+                          {getProductImages(p).length} fotos
+                        </span>
+                      )}
                     </div>
                   )}
                   <div className="p-4">

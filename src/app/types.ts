@@ -10,6 +10,7 @@ export interface Product {
   priceMin?: number;
   priceMax?: number;
   image: string;
+  images?: string[];
 }
 
 export interface Enterprise {
