@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { Enterprise, Product, User, Category } from "../types";
 
-const API_BASE = "https://api-vitrine.brizzigui.com";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const client = axios.create({ baseURL: API_BASE + "/api" });
 

@@ -23,7 +23,7 @@ export default defineConfig({
   ],
 
   server: {
-    allowedHosts: ['vitrine.brizzigui.com'],
+    allowedHosts: ['vitrine.brizzigui.com', 'test-vitrine.brizzigui.com'],
   },
 
   resolve: {
