@@ -25,6 +25,7 @@ import {
   isValidBrazilPhone,
   normalizeBrazilPhone,
 } from "../utils/validation";
+import { SubmitButton } from "../components/SubmitButton";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import QRCode from "react-qr-code";
@@ -232,9 +233,7 @@ function ProductForm({
         <Field label="Preço (R$) *">
           <input
             className={inputCls}
-            type="number"
-            min="0"
-            step="0.01"
+            type="text"
             value={form.price}
             onChange={(e) => set("price", e.target.value)}
             onBlur={() => {
@@ -251,9 +250,7 @@ function ProductForm({
           <Field label="Preço mínimo (R$) *">
             <input
               className={inputCls}
-              type="number"
-              min="0"
-              step="0.01"
+              type="text"
               value={form.priceMin}
               onChange={(e) => set("priceMin", e.target.value)}
               placeholder="0,00"
@@ -263,9 +260,7 @@ function ProductForm({
           <Field label="Preço máximo (R$) *">
             <input
               className={inputCls}
-              type="number"
-              min="0"
-              step="0.01"
+              type="text"
               value={form.priceMax}
               onChange={(e) => set("priceMax", e.target.value)}
               placeholder="0,00"
@@ -302,7 +297,7 @@ function ProductForm({
                 setProductPriceError("Campo obrigatório");
                 return;
               }
-              const singlePrice = parseFloat(form.price);
+              const singlePrice = parseFloat(form.price.replace(",", "."));
               if (Number.isNaN(singlePrice) || singlePrice < 0) {
                 setProductPriceError("Informe um preço válido");
                 return;
@@ -322,8 +317,8 @@ function ProductForm({
                 setProductPriceError("Preencha mínimo e máximo");
                 return;
               }
-              const min = parseFloat(form.priceMin);
-              const max = parseFloat(form.priceMax);
+              const min = parseFloat(form.priceMin.replace(",", "."));
+              const max = parseFloat(form.priceMax.replace(",", "."));
               if (
                 Number.isNaN(min) ||
                 Number.isNaN(max) ||
@@ -681,12 +676,14 @@ export function OwnerPanel() {
     };
     const res = await addProduct(e.id, newProduct);
     if (!res) throw new Error("Failed");
+    setShowAddProduct(false);
   };
 
   const handleEditProduct = async (data: Partial<Product>) => {
     if (!editProductData) throw new Error("Failed");
     const res = await updateProduct(e.id, editProductData.id, data);
     if (!res) throw new Error("Failed");
+    setEditProductData(null);
   };
 
   return (

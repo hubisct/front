@@ -392,7 +392,7 @@ function ProductForm({
         setProductPriceError("Campo obrigatório");
         throw new Error("Validation Error");
       }
-      const singlePrice = parseFloat(form.price);
+      const singlePrice = parseFloat(form.price.replace(",", "."));
       if (Number.isNaN(singlePrice) || singlePrice < 0) {
         setProductPriceError("Informe um preço válido");
         throw new Error("Validation Error");
@@ -413,8 +413,8 @@ function ProductForm({
         setProductPriceError("Preencha mínimo e máximo");
         throw new Error("Validation Error");
       }
-      const min = parseFloat(form.priceMin);
-      const max = parseFloat(form.priceMax);
+      const min = parseFloat(form.priceMin.replace(",", "."));
+      const max = parseFloat(form.priceMax.replace(",", "."));
       if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
         setProductPriceError("Informe uma faixa válida");
         throw new Error("Validation Error");
@@ -499,9 +499,7 @@ function ProductForm({
         <Field label="Preço (R$) *">
           <input
             className={inputCls}
-            type="number"
-            min="0"
-            step="0.01"
+            type="text"
             value={form.price}
             onChange={(e) => set("price", e.target.value)}
             onBlur={() => {
@@ -518,9 +516,7 @@ function ProductForm({
           <Field label="Preço mínimo (R$) *">
             <input
               className={inputCls}
-              type="number"
-              min="0"
-              step="0.01"
+              type="text"
               value={form.priceMin}
               onChange={(e) => set("priceMin", e.target.value)}
               placeholder="0,00"
@@ -530,9 +526,7 @@ function ProductForm({
           <Field label="Preço máximo (R$) *">
             <input
               className={inputCls}
-              type="number"
-              min="0"
-              step="0.01"
+              type="text"
               value={form.priceMax}
               onChange={(e) => set("priceMax", e.target.value)}
               placeholder="0,00"
