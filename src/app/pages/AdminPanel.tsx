@@ -500,6 +500,7 @@ function ProductForm({
           <input
             className={inputCls}
             type="text"
+            inputMode="decimal"
             value={form.price}
             onChange={(e) => set("price", e.target.value)}
             onBlur={() => {
@@ -517,6 +518,7 @@ function ProductForm({
             <input
               className={inputCls}
               type="text"
+              inputMode="decimal"
               value={form.priceMin}
               onChange={(e) => set("priceMin", e.target.value)}
               placeholder="0,00"
@@ -527,6 +529,7 @@ function ProductForm({
             <input
               className={inputCls}
               type="text"
+              inputMode="decimal"
               value={form.priceMax}
               onChange={(e) => set("priceMax", e.target.value)}
               placeholder="0,00"
