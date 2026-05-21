@@ -7,15 +7,6 @@ import { useEffect } from "react";
 
 const HERO_BG = "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
-const categoryIcons: Record<Category, string> = {
-  Artesanato: "🎨",
-  Alimentação: "🍞",
-  Moda: "👗",
-  Plantas: "🌿",
-  Cosmética: "✨",
-  Reciclagem: "♻️",
-};
-
 export function HomePage() {
   useEffect(() => {
       document.title = "Vitrine HUBIS";
@@ -167,7 +158,6 @@ export function HomePage() {
                   }`}
                   style={{ fontFamily: "Nunito, sans-serif" }}
                 >
-                  <span>{categoryIcons[cat]}</span>
                   {cat}
                 </button>
               ))}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Enterprise, Product, User, Category } from "../types";
+import type { Enterprise, Product, User, Category, CategoryItem } from "../types";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -7,6 +7,26 @@ const client = axios.create({ baseURL: API_BASE + "/api" });
 
 export async function getCategories(): Promise<Category[]> {
   const res = await client.get("/categories");
+  return res.data;
+}
+
+export async function getCategoryObjects(): Promise<CategoryItem[]> {
+  const res = await client.get("/categories", { params: { format: "objects" } });
+  return res.data;
+}
+
+export async function createCategory(name: string): Promise<CategoryItem> {
+  const res = await client.post("/categories", { name });
+  return res.data;
+}
+
+export async function updateCategory(id: string, name: string): Promise<CategoryItem> {
+  const res = await client.put(`/categories/${id}`, { name });
+  return res.data;
+}
+
+export async function deleteCategory(id: string): Promise<{ ok: true }> {
+  const res = await client.delete(`/categories/${id}`);
   return res.data;
 }
 

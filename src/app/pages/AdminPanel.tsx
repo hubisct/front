@@ -20,9 +20,19 @@ import {
   EyeOff,
   Home,
   Package,
+  Tags,
 } from "lucide-react";
 import { useAuth, User } from "../contexts/AuthContext";
-import type { Enterprise, Product, Category } from "../types";
+import type { Enterprise, Product, Category, CategoryItem } from "../types";
+import * as api from "../api";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
@@ -37,7 +47,7 @@ import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import { SubmitButton } from "../components/SubmitButton";
 
-type Tab = "dashboard" | "enterprises" | "users";
+type Tab = "dashboard" | "enterprises" | "users" | "categories";
 // ── MODAL ──────────────────────────────────────────────────────────────────
 function Modal({
   title,
@@ -46,7 +56,6 @@ function Modal({
 }: {
   title: string;
   onClose: () => void;
-  children: React.ReactNode;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
@@ -775,6 +784,92 @@ function UserForm({
   );
 }
 
+// ── CATEGORY FORM ─────────────────────────────────────────────────────────
+function CategoryForm({
+  initial,
+  onSave,
+  onClose,
+}: {
+  initial?: CategoryItem | null;
+  onSave: (name: string) => Promise<void> | void;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState(initial?.name || "");
+  const [nameError, setNameError] = useState("");
+  const [serverError, setServerError] = useState("");
+
+  const handleSave = async () => {
+    setNameError("");
+    setServerError("");
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setNameError("Campo obrigatório");
+      throw new Error("Validation Error");
+    }
+    try {
+      await onSave(trimmed);
+      setTimeout(() => onClose(), 1200);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao salvar categoria";
+      setServerError(msg);
+      throw err;
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <Field label="Nome da categoria *">
+        <input
+          className={inputCls}
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (nameError) setNameError("");
+            if (serverError) setServerError("");
+          }}
+          onBlur={() => {
+            if (!name.trim()) setNameError("Campo obrigatório");
+          }}
+          placeholder="Ex: Artesanato"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        />
+        {nameError && (
+          <p
+            className="text-red-600 text-sm mt-1"
+            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 700 }}
+          >
+            {nameError}
+          </p>
+        )}
+      </Field>
+      {serverError && (
+        <div
+          className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 font-semibold"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {serverError}
+        </div>
+      )}
+      <div className="flex gap-3 pt-2">
+        <SubmitButton
+          onClick={handleSave}
+          className={btnPrimary + " flex-1"}
+          style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)" }}
+          idleText="Salvar categoria"
+        />
+        <button
+          onClick={onClose}
+          className={
+            btnSecondary + " border-gray-200 text-gray-600 hover:bg-gray-50"
+          }
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
 function ConfirmDialog({
   message,
@@ -835,6 +930,7 @@ export function AdminPanel() {
     enterprises,
     categories,
     isAdmin,
+    refreshCategories,
     logout,
     addEnterprise,
     updateEnterprise,
@@ -848,6 +944,10 @@ export function AdminPanel() {
   } = useAuth();
 
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [categoryItems, setCategoryItems] = useState<CategoryItem[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [categoryError, setCategoryError] = useState("");
+  const [categoryPage, setCategoryPage] = useState(1);
   const [expandedEnterprise, setExpandedEnterprise] = useState<string | null>(
     null,
   );
@@ -875,16 +975,70 @@ export function AdminPanel() {
   const [editUser, setEditUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
+  // Category modals
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [editCategory, setEditCategory] = useState<CategoryItem | null>(null);
+  const [deleteCategory, setDeleteCategory] = useState<CategoryItem | null>(null);
+
   // Protect route
   useEffect(() => {
     if (!user) navigate("/login");
     else if (!isAdmin) navigate("/painel");
   }, [user, isAdmin, navigate]);
 
+  useEffect(() => {
+    if (!user || !isAdmin) return;
+    const load = async () => {
+      setCategoriesLoading(true);
+      setCategoryError("");
+      try {
+        const data = await api.getCategoryObjects();
+        setCategoryItems(data);
+      } catch (err) {
+        setCategoryError("Nao foi possivel carregar as categorias.");
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    load();
+  }, [user, isAdmin]);
+
   if (!user || !isAdmin) return null;
 
   const ownerUsers = users.filter((u) => u.role === "owner");
   const adminUsers = users.filter((u) => u.role === "admin");
+  const sortedCategories = [...categoryItems].sort((a, b) =>
+    a.name.localeCompare(b.name, "pt-BR"),
+  );
+  const categoriesPerPage = 15;
+  const totalCategoryPages = Math.max(
+    1,
+    Math.ceil(sortedCategories.length / categoriesPerPage),
+  );
+  const categoryStart = (categoryPage - 1) * categoriesPerPage;
+  const pagedCategories = sortedCategories.slice(
+    categoryStart,
+    categoryStart + categoriesPerPage,
+  );
+
+  useEffect(() => {
+    if (categoryPage > totalCategoryPages) {
+      setCategoryPage(totalCategoryPages);
+    }
+  }, [categoryPage, totalCategoryPages]);
+
+  const resolveCategoryError = (err: unknown, action: "save" | "delete") => {
+    const status = (err as any)?.response?.status;
+    if (status === 409) {
+      return action === "delete"
+        ? "Esta categoria esta em uso por algum empreendimento."
+        : "Esta categoria ja existe.";
+    }
+    if (status === 400) return "Informe um nome valido.";
+    return action === "delete"
+      ? "Nao foi possivel excluir a categoria."
+      : "Nao foi possivel salvar a categoria.";
+  };
 
   const handleAddEnterprise = async (data: Partial<Enterprise>) => {
     const newEnterprise: Enterprise = {
@@ -956,6 +1110,46 @@ export function AdminPanel() {
     if (!res) throw new Error("Failed to edit user");
   };
 
+  const handleAddCategory = async (name: string) => {
+    setCategoryError("");
+    try {
+      const created = await api.createCategory(name);
+      setCategoryItems((prev) => [...prev, created]);
+      await refreshCategories();
+    } catch (err) {
+      throw new Error(resolveCategoryError(err, "save"));
+    }
+  };
+
+  const handleEditCategory = async (name: string) => {
+    if (!editCategory) throw new Error("No category to edit");
+    setCategoryError("");
+    try {
+      const updated = await api.updateCategory(editCategory.id, name);
+      setCategoryItems((prev) =>
+        prev.map((c) => (c.id === editCategory.id ? updated : c)),
+      );
+      await refreshCategories();
+    } catch (err) {
+      throw new Error(resolveCategoryError(err, "save"));
+    }
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!deleteCategory) return;
+    setCategoryError("");
+    try {
+      await api.deleteCategory(deleteCategory.id);
+      setCategoryItems((prev) =>
+        prev.filter((c) => c.id !== deleteCategory.id),
+      );
+      await refreshCategories();
+      setDeleteCategory(null);
+    } catch (err) {
+      setCategoryError(resolveCategoryError(err, "delete"));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top bar */}
@@ -1006,6 +1200,7 @@ export function AdminPanel() {
                 },
                 { id: "enterprises", icon: Store, label: "Empreendimentos" },
                 { id: "users", icon: Users, label: "Usuários" },
+                { id: "categories", icon: Tags, label: "Categorias" },
               ] as { id: Tab; icon: typeof LayoutDashboard; label: string }[]
             ).map(({ id, icon: Icon, label }) => (
               <button
@@ -1071,6 +1266,7 @@ export function AdminPanel() {
                   { id: "dashboard", icon: LayoutDashboard },
                   { id: "enterprises", icon: Store },
                   { id: "users", icon: Users },
+                  { id: "categories", icon: Tags },
                 ] as { id: Tab; icon: typeof LayoutDashboard }[]
               ).map(({ id, icon: Icon }) => (
                 <button
@@ -1480,6 +1676,156 @@ export function AdminPanel() {
               </div>
             )}
 
+            {/* ── CATEGORIES TAB ───────────────────────────────────── */}
+            {tab === "categories" && (
+              <div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+                  <h1
+                    className="text-gray-900 text-xl sm:text-2xl lg:text-3xl"
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 800,
+                    }}
+                  >
+                    Gestão de Categorias
+                  </h1>
+                  <button
+                    onClick={() => {
+                      setShowAddCategory(true);
+                      setCategoryError("");
+                    }}
+                    className={btnPrimary + " text-sm"}
+                    style={{
+                      background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Nova categoria</span>
+                    <span className="sm:hidden">Nova</span>
+                  </button>
+                </div>
+
+                {categoryError && (
+                  <div
+                    className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 font-semibold"
+                    style={{ fontFamily: "Nunito, sans-serif" }}
+                  >
+                    {categoryError}
+                  </div>
+                )}
+
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gradient-to-r from-purple-50 via-white to-orange-50">
+                        <TableHead className="text-gray-700 text-xs uppercase tracking-wider font-semibold">
+                          Categoria
+                        </TableHead>
+                        <TableHead className="text-right text-gray-700 text-xs uppercase tracking-wider font-semibold">
+                          Acoes
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="[&>tr:nth-child(even)]:bg-gray-50/60">
+                      {categoriesLoading && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={2}
+                            className="text-center text-gray-400"
+                            style={{ fontFamily: "Nunito, sans-serif" }}
+                          >
+                            Carregando categorias...
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {!categoriesLoading && sortedCategories.length === 0 && (
+                        <TableRow>
+                          <TableCell
+                            colSpan={2}
+                            className="text-center text-gray-400"
+                            style={{ fontFamily: "Nunito, sans-serif" }}
+                          >
+                            Nenhuma categoria cadastrada
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {!categoriesLoading &&
+                        pagedCategories.map((cat) => (
+                          <TableRow key={cat.id}>
+                            <TableCell className="py-3">
+                              <p
+                                className="text-gray-900 font-bold text-sm sm:text-base truncate"
+                                style={{ fontFamily: "Nunito, sans-serif" }}
+                              >
+                                {cat.name}
+                              </p>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="inline-flex items-center gap-1">
+                                <button
+                                  onClick={() => {
+                                    setEditCategory(cat);
+                                    setCategoryError("");
+                                  }}
+                                  className="p-1.5 sm:p-2 rounded-xl text-blue-600 hover:bg-blue-50 border border-blue-200 transition-colors"
+                                  title="Editar"
+                                >
+                                  <Pencil className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setDeleteCategory(cat);
+                                    setCategoryError("");
+                                  }}
+                                  className="p-1.5 sm:p-2 rounded-xl text-red-500 hover:bg-red-50 border border-red-200 transition-colors"
+                                  title="Excluir"
+                                >
+                                  <Trash2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
+                                </button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                {!categoriesLoading && sortedCategories.length > 0 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <span
+                      className="text-sm text-gray-500 font-semibold"
+                      style={{ fontFamily: "Nunito, sans-serif" }}
+                    >
+                      Pagina {categoryPage} de {totalCategoryPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setCategoryPage((p) => Math.max(1, p - 1))
+                        }
+                        disabled={categoryPage === 1}
+                        className="px-3 py-1.5 rounded-lg text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ fontFamily: "Nunito, sans-serif" }}
+                      >
+                        Anterior
+                      </button>
+                      <button
+                        onClick={() =>
+                          setCategoryPage((p) =>
+                            Math.min(totalCategoryPages, p + 1),
+                          )
+                        }
+                        disabled={categoryPage === totalCategoryPages}
+                        className="px-3 py-1.5 rounded-lg text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ fontFamily: "Nunito, sans-serif" }}
+                      >
+                        Proxima
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── USERS TAB ─────────────────────────────────────────── */}
             {tab === "users" && (
               <div>
@@ -1772,6 +2118,36 @@ export function AdminPanel() {
             setDeleteProduct(null);
           }}
           onCancel={() => setDeleteProduct(null)}
+        />
+      )}
+
+      {showAddCategory && (
+        <Modal title="Nova Categoria" onClose={() => setShowAddCategory(false)}>
+          <CategoryForm
+            onSave={handleAddCategory}
+            onClose={() => setShowAddCategory(false)}
+          />
+        </Modal>
+      )}
+
+      {editCategory && (
+        <Modal
+          title={`Editar: ${editCategory.name}`}
+          onClose={() => setEditCategory(null)}
+        >
+          <CategoryForm
+            initial={editCategory}
+            onSave={handleEditCategory}
+            onClose={() => setEditCategory(null)}
+          />
+        </Modal>
+      )}
+
+      {deleteCategory && (
+        <ConfirmDialog
+          message={`Deseja remover a categoria "${deleteCategory.name}"?`}
+          onConfirm={handleDeleteCategory}
+          onCancel={() => setDeleteCategory(null)}
         />
       )}
 

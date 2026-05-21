@@ -1,23 +1,13 @@
 import { Link } from "react-router";
 import { Tag, ShoppingBag } from "lucide-react";
 import type { Enterprise } from "../types";
-import { categoryColors } from "../data/constants";
 
 interface EnterpriseCardProps {
   enterprise: Enterprise;
 }
 
-const categoryEmojis: Record<string, string> = {
-  Artesanato: "🎨",
-  Alimentação: "🍞",
-  Moda: "👗",
-  Plantas: "🌿",
-  Cosmética: "✨",
-  Reciclagem: "♻️",
-};
-
 export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
-  const colors = categoryColors[enterprise.category];
+  const badgeClasses = "bg-gray-100 text-gray-700 border-gray-300";
 
   return (
     <Link
@@ -35,10 +25,9 @@ export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
 
         {/* Category Badge */}
         <div
-          className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm backdrop-blur-sm flex items-center gap-1 ${colors.bg} ${colors.text} ${colors.border}`}
+          className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm backdrop-blur-sm flex items-center gap-1 ${badgeClasses}`}
           style={{ fontFamily: "Nunito, sans-serif" }}
         >
-          <span>{categoryEmojis[enterprise.category]}</span>
           {enterprise.category}
         </div>
 

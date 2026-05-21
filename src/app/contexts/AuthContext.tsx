@@ -9,6 +9,7 @@ interface AuthContextType {
   users: User[];
   enterprises: Enterprise[];
   categories: Category[];
+  refreshCategories: () => Promise<void>;
   isAdmin: boolean;
   isOwner: boolean;
   myEnterprise: Enterprise | null;
@@ -67,6 +68,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })();
   }, []);
+
+  const refreshCategories = async () => {
+    try {
+      const cats = await api.getCategories();
+      setCategories(cats as Category[]);
+    } catch (err) {
+      console.error("Failed to load categories", err);
+    }
+  };
 
   const isAdmin = user?.role === "admin";
   const isOwner = user?.role === "owner";
@@ -233,6 +243,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateUser,
         removeUser,
         categories,
+        refreshCategories,
       }}
     >
       {children}

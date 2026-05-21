@@ -35,3 +35,8 @@ export interface User {
   enterpriseId?: string;
   active: boolean;
 }
+
+export interface CategoryItem {
+  id: string;
+  name: string;
+}
