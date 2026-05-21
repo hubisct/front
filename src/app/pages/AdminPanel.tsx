@@ -1095,6 +1095,8 @@ export function AdminPanel() {
 
   const ownerUsers = users.filter((u) => u.role === "owner");
   const adminUsers = users.filter((u) => u.role === "admin");
+  const getCategoryMeta = (name: string) =>
+    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
   const sortedCategories = [...categoryItems].sort((a, b) =>
     a.name.localeCompare(b.name, "pt-BR"),
   );
@@ -1551,7 +1553,7 @@ export function AdminPanel() {
                           </p>
                         </div>
                         <button
-                          onClick={() => exportCatalogPDF(e)}
+                          onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
                           className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold border border-purple-200 hover:bg-purple-100 transition-colors"
                           style={{ fontFamily: "Nunito, sans-serif" }}
                         >
@@ -1626,7 +1628,7 @@ export function AdminPanel() {
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           <button
-                            onClick={() => exportCatalogPDF(e)}
+                            onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
                             title="Exportar PDF"
                             className="p-1.5 sm:p-2 rounded-xl text-purple-600 hover:bg-purple-50 transition-colors border border-purple-200"
                           >

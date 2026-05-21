@@ -29,6 +29,7 @@ import { SubmitButton } from "../components/SubmitButton";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import QRCode from "react-qr-code";
+import { getCategoryColors } from "../utils/categoryStyle";
 
 // ── SHARED COMPONENTS ──────────────────────────────────────────────────────
 
@@ -614,7 +615,11 @@ export function OwnerPanel() {
     addProduct,
     updateProduct,
     removeProduct,
+    categoryItems,
   } = useAuth();
+
+  const getCategoryMeta = (name: string) =>
+    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
 
   const [editingEnterprise, setEditingEnterprise] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -790,12 +795,27 @@ export function OwnerPanel() {
             />
             <div className="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
               <div>
-                <span
-                  className="inline-block px-2.5 py-1 rounded-full text-xs font-bold bg-white/20 text-white border border-white/30 mb-2 backdrop-blur-sm"
-                  style={{ fontFamily: "Nunito, sans-serif" }}
-                >
-                  {e.category}
-                </span>
+                {(() => {
+                  const meta = categoryItems.find(
+                    (c) => c.name.toLowerCase() === e.category.toLowerCase(),
+                  );
+                  const colors = getCategoryColors(meta?.color);
+                  const emoji = meta?.emoji || "🏷️";
+                  return (
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border mb-2"
+                      style={{
+                        fontFamily: "Nunito, sans-serif",
+                        backgroundColor: colors.bg,
+                        color: colors.text,
+                        borderColor: colors.bg,
+                      }}
+                    >
+                      <span>{emoji}</span>
+                      {e.category}
+                    </span>
+                  );
+                })()}
                 <h2
                   className="text-white"
                   style={{
@@ -810,7 +830,7 @@ export function OwnerPanel() {
               </div>
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
                 <button
-                  onClick={() => exportCatalogPDF(e)}
+                  onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
                   className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
                   style={{
                     background: "rgba(124,58,237,0.7)",
@@ -939,8 +959,8 @@ export function OwnerPanel() {
               <ExternalLink className="w-4 h-4" />
               Ver página pública
             </Link>
-            <button
-              onClick={() => exportCatalogPDF(e)}
+              <button
+                onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-orange-700 bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >

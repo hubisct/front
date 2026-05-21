@@ -1,12 +1,16 @@
-import type { Enterprise } from "../types";
+import type { Enterprise, CategoryItem } from "../types";
 import { getPrimaryProductImage } from "./productImages";
 import { getProductPriceLabel } from "./pricing";
+import { getCategoryColors } from "./categoryStyle";
 
-export function exportCatalogPDF(enterprise: Enterprise): void {
+export function exportCatalogPDF(
+  enterprise: Enterprise,
+  categoryMeta?: CategoryItem | null,
+): void {
   const printWindow = window.open("", "_blank", "width=900,height=700");
   if (!printWindow) return;
 
-  const html = generateCatalogHTML(enterprise);
+  const html = generateCatalogHTML(enterprise, categoryMeta);
   printWindow.document.write(html);
   printWindow.document.close();
 
@@ -77,10 +81,15 @@ function sanitizeImageSrc(value?: string): string {
   return escapeHtml((value || "").trim());
 }
 
-function generateCatalogHTML(enterprise: Enterprise): string {
+function generateCatalogHTML(
+  enterprise: Enterprise,
+  categoryMeta?: CategoryItem | null,
+): string {
   const enterpriseName = sanitizeText(enterprise.name) || "Empreendimento";
   const enterpriseCategory = sanitizeText(enterprise.category) || "Sem categoria";
   const enterpriseDescription = sanitizeText(enterprise.fullDescription || enterprise.description) || "Descrição não informada.";
+  const categoryEmoji = sanitizeText(categoryMeta?.emoji || "🏷️");
+  const categoryColors = getCategoryColors(categoryMeta?.color);
 
   const coverImageSrc = sanitizeImageSrc(enterprise.coverImage);
   const coverHTML = coverImageSrc
@@ -207,12 +216,12 @@ function generateCatalogHTML(enterprise: Enterprise): string {
     .header-cat {
       margin-top: 10px;
       display: inline-block;
-      background: rgba(255,255,255,0.2);
-      color: white;
+      background: var(--cat-bg, rgba(255,255,255,0.2));
+      color: var(--cat-text, white);
       font-size: 10px;
       padding: 3px 10px;
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid var(--cat-border, rgba(255,255,255,0.3));
     }
 
     .content { padding: 28px 36px; }
@@ -445,12 +454,12 @@ function generateCatalogHTML(enterprise: Enterprise): string {
 </head>
 <body>
   <!-- HEADER -->
-  <div class="header">
+  <div class="header" style="--cat-bg:${categoryColors.bg}; --cat-text:${categoryColors.text}; --cat-border:${categoryColors.bg};">
     <div class="header-date">${today}</div>
     <div class="header-brand">Vitrine Social · Incubadora Social UFSM</div>
     <div class="header-title">Catálogo de Produtos</div>
     <div class="header-sub">${enterpriseName}</div>
-    <div class="header-cat">${enterpriseCategory}</div>
+    <div class="header-cat">${categoryEmoji} ${enterpriseCategory}</div>
   </div>
 
   <!-- CONTENT -->

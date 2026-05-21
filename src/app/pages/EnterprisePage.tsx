@@ -101,7 +101,7 @@ export function EnterprisePage() {
           </Link>
           {canExportPDF && (
             <button
-              onClick={() => exportCatalogPDF(enterprise)}
+              onClick={() => exportCatalogPDF(enterprise, categoryMeta)}
               className="flex items-center gap-2 bg-purple-600/90 hover:bg-purple-700 backdrop-blur-sm px-4 py-2 rounded-full shadow-md transition-all font-bold text-white text-sm"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
