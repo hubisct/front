@@ -1,4 +1,4 @@
-export type Category = "Artesanato" | "Alimentação" | "Moda" | "Plantas" | "Cosmética" | "Reciclagem";
+export type Category = string;
 export type ProductPriceMode = "single" | "range" | "hidden";
 
 export interface Product {
@@ -39,4 +39,6 @@ export interface User {
 export interface CategoryItem {
   id: string;
   name: string;
+  color?: string | null;
+  emoji?: string | null;
 }

@@ -3,22 +3,21 @@ import {
   ArrowLeft,
   Instagram,
   Mail,
-  Tag,
   ShoppingBag,
   ExternalLink,
   FileDown,
 } from "lucide-react";
-import { categoryColors } from "../data/constants";
 import { ProductCard } from "../components/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { useState } from "react";
 import { normalizeBrazilPhone } from "../utils/validation";
 import { useEffect } from "react";
+import { getCategoryColors } from "../utils/categoryStyle";
 
 export function EnterprisePage() {
   const { id } = useParams<{ id: string }>();
-  const { enterprises, isAdmin, isOwner, myEnterprise } = useAuth();
+  const { enterprises, isAdmin, isOwner, myEnterprise, categoryItems } = useAuth();
   const enterprise = enterprises.find((e) => e.id === id);
   const [expanded, setExpanded] = useState(false);
 
@@ -62,7 +61,11 @@ export function EnterprisePage() {
   }
 
   const isLong = enterprise.description.length > 85;
-  const colors = categoryColors[enterprise.category];
+  const getCategoryMeta = (name: string) =>
+    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  const categoryMeta = getCategoryMeta(enterprise.category);
+  const colors = getCategoryColors(categoryMeta?.color);
+  const emoji = categoryMeta?.emoji || "🏷️";
   const normalizedWhatsapp = normalizeBrazilPhone(enterprise.whatsapp || "");
   const whatsappMessage = encodeURIComponent(
     `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`,
@@ -111,10 +114,15 @@ export function EnterprisePage() {
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-6">
           <div className="max-w-7xl mx-auto">
             <span
-              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border mb-3 ${colors.bg} ${colors.text} ${colors.border}`}
-              style={{ fontFamily: "Nunito, sans-serif" }}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border mb-3"
+              style={{
+                fontFamily: "Nunito, sans-serif",
+                backgroundColor: colors.bg,
+                color: colors.text,
+                borderColor: colors.bg,
+              }}
             >
-              <Tag className="w-3 h-3" />
+              <span>{emoji}</span>
               {enterprise.category}
             </span>
             <h1
@@ -491,7 +499,9 @@ export function EnterprisePage() {
               .filter((e) => e.id !== enterprise.id)
               .slice(0, 3)
               .map((e) => {
-                const c = categoryColors[e.category];
+                const meta = getCategoryMeta(e.category);
+                const badgeColors = getCategoryColors(meta?.color);
+                const badgeEmoji = meta?.emoji || "🏷️";
                 return (
                   <Link
                     key={e.id}
@@ -507,9 +517,15 @@ export function EnterprisePage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <span
-                        className={`text-xs font-bold px-2 py-0.5 rounded-full ${c.bg} ${c.text} ${c.border} border mb-1 inline-block`}
-                        style={{ fontFamily: "Nunito, sans-serif" }}
+                        className="text-xs font-bold px-2 py-0.5 rounded-full border mb-1 inline-flex items-center gap-1"
+                        style={{
+                          fontFamily: "Nunito, sans-serif",
+                          backgroundColor: badgeColors.bg,
+                          color: badgeColors.text,
+                          borderColor: badgeColors.bg,
+                        }}
                       >
+                        <span>{badgeEmoji}</span>
                         {e.category}
                       </span>
                       <p

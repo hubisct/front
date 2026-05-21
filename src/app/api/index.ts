@@ -15,13 +15,20 @@ export async function getCategoryObjects(): Promise<CategoryItem[]> {
   return res.data;
 }
 
-export async function createCategory(name: string): Promise<CategoryItem> {
-  const res = await client.post("/categories", { name });
+export async function createCategory(payload: {
+  name: string;
+  color?: string | null;
+  emoji?: string | null;
+}): Promise<CategoryItem> {
+  const res = await client.post("/categories", payload);
   return res.data;
 }
 
-export async function updateCategory(id: string, name: string): Promise<CategoryItem> {
-  const res = await client.put(`/categories/${id}`, { name });
+export async function updateCategory(
+  id: string,
+  payload: { name: string; color?: string | null; emoji?: string | null },
+): Promise<CategoryItem> {
+  const res = await client.put(`/categories/${id}`, payload);
   return res.data;
 }
 

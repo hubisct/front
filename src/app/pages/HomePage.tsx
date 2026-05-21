@@ -4,6 +4,7 @@ import { EnterpriseCard } from "../components/EnterpriseCard";
 import type { Category } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
+import { getCategoryColors } from "../utils/categoryStyle";
 
 const HERO_BG = "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
@@ -14,7 +15,10 @@ export function HomePage() {
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | "Todas">("Todas");
-  const { enterprises, categories } = useAuth();
+  const { enterprises, categories, categoryItems } = useAuth();
+
+  const getCategoryMeta = (name: string) =>
+    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
 
   const filtered = useMemo(() => {
     return enterprises.filter((e) => {
@@ -148,18 +152,30 @@ export function HomePage() {
                 Todas
               </button>
               {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    selectedCategory === cat
-                      ? "bg-white text-purple-700 shadow-md"
-                      : "bg-white/20 text-white border border-white/30 hover:bg-white/30"
-                  }`}
-                  style={{ fontFamily: "Nunito, sans-serif" }}
-                >
-                  {cat}
-                </button>
+                (() => {
+                  const meta = getCategoryMeta(cat);
+                  const colors = getCategoryColors(meta?.color);
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                        selectedCategory === cat
+                          ? "shadow-md ring-2 ring-white/70"
+                          : "opacity-90 hover:opacity-100"
+                      }`}
+                      style={{
+                        fontFamily: "Nunito, sans-serif",
+                        backgroundColor: colors.bg,
+                        color: colors.text,
+                        borderColor: colors.bg,
+                      }}
+                    >
+                      <span>{meta?.emoji || "🏷️"}</span>
+                      {cat}
+                    </button>
+                  );
+                })()
               ))}
             </div>
           </div>

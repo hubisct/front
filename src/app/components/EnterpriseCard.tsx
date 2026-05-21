@@ -1,13 +1,20 @@
 import { Link } from "react-router";
-import { Tag, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import type { Enterprise } from "../types";
+import { useAuth } from "../contexts/AuthContext";
+import { getCategoryColors } from "../utils/categoryStyle";
 
 interface EnterpriseCardProps {
   enterprise: Enterprise;
 }
 
 export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
-  const badgeClasses = "bg-gray-100 text-gray-700 border-gray-300";
+  const { categoryItems } = useAuth();
+  const categoryMeta = categoryItems.find(
+    (c) => c.name.toLowerCase() === enterprise.category.toLowerCase(),
+  );
+  const colors = getCategoryColors(categoryMeta?.color);
+  const emoji = categoryMeta?.emoji || "🏷️";
 
   return (
     <Link
@@ -25,9 +32,15 @@ export function EnterpriseCard({ enterprise }: EnterpriseCardProps) {
 
         {/* Category Badge */}
         <div
-          className={`absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm backdrop-blur-sm flex items-center gap-1 ${badgeClasses}`}
-          style={{ fontFamily: "Nunito, sans-serif" }}
+          className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm backdrop-blur-sm flex items-center gap-1"
+          style={{
+            fontFamily: "Nunito, sans-serif",
+            backgroundColor: colors.bg,
+            color: colors.text,
+            borderColor: colors.bg,
+          }}
         >
+          <span>{emoji}</span>
           {enterprise.category}
         </div>
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { Enterprise, Product, Category, User } from "../types";
+import type { Enterprise, Product, Category, User, CategoryItem } from "../types";
 import * as api from "../api";
 
 // Context provides data fetched from backend and CRUD helpers
@@ -9,6 +9,7 @@ interface AuthContextType {
   users: User[];
   enterprises: Enterprise[];
   categories: Category[];
+  categoryItems: CategoryItem[];
   refreshCategories: () => Promise<void>;
   isAdmin: boolean;
   isOwner: boolean;
@@ -50,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<User[]>([]);
   const [enterprises, setEnterprises] = useState<Enterprise[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryItems, setCategoryItems] = useState<CategoryItem[]>([]);
 
   // Load initial data
   useEffect(() => {
@@ -57,11 +59,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const [ents, cats, usrs] = await Promise.all([
           api.getEnterprises(),
-          api.getCategories(),
+          api.getCategoryObjects(),
           api.getUsers(),
         ]);
         setEnterprises(ents);
-        setCategories(cats as Category[]);
+        setCategoryItems(cats as CategoryItem[]);
+        setCategories((cats as CategoryItem[]).map((c) => c.name) as Category[]);
         setUsers(usrs as User[]);
       } catch (err) {
         console.error("Failed to load initial data", err);
@@ -71,8 +74,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshCategories = async () => {
     try {
-      const cats = await api.getCategories();
-      setCategories(cats as Category[]);
+      const cats = await api.getCategoryObjects();
+      setCategoryItems(cats as CategoryItem[]);
+      setCategories((cats as CategoryItem[]).map((c) => c.name) as Category[]);
     } catch (err) {
       console.error("Failed to load categories", err);
     }
@@ -243,6 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateUser,
         removeUser,
         categories,
+        categoryItems,
         refreshCategories,
       }}
     >
