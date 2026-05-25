@@ -1820,7 +1820,7 @@ export function AdminPanel() {
                           Categoria
                         </TableHead>
                         <TableHead className="text-right text-gray-700 text-xs uppercase tracking-wider font-semibold">
-                          Acoes
+                          Ações
                         </TableHead>
                       </TableRow>
                     </TableHeader>
