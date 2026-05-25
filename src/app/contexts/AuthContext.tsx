@@ -100,6 +100,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           // ignore
         }
+        // If the logged in user is admin, fetch users list
+        try {
+          if ((res as any).role === "admin") {
+            const usrs = await api.getUsers();
+            setUsers(Array.isArray(usrs) ? usrs : []);
+          }
+        } catch (e) {
+          console.error("Failed to load users after login", e);
+        }
         return true;
       }
     } catch (err) {
@@ -107,6 +116,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     return false;
   };
+
+  // When user state changes, if user is admin fetch users; otherwise clear users
+  useEffect(() => {
+    (async () => {
+      if (user?.role === "admin") {
+        try {
+          const usrs = await api.getUsers();
+          setUsers(Array.isArray(usrs) ? usrs : []);
+        } catch (e) {
+          console.error("Failed to load users for admin", e);
+          setUsers([]);
+        }
+      } else {
+        setUsers([]);
+      }
+    })();
+  }, [user]);
 
   const logout = () => {
     setUser(null);
