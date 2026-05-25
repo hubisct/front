@@ -57,15 +57,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [ents, cats, usrs] = await Promise.all([
+        const [ents, cats] = await Promise.all([
           api.getEnterprises(),
           api.getCategoryObjects(),
-          api.getUsers(),
         ]);
-        setEnterprises(ents);
-        setCategoryItems(cats as CategoryItem[]);
-        setCategories((cats as CategoryItem[]).map((c) => c.name) as Category[]);
-        setUsers(usrs as User[]);
+        setEnterprises(Array.isArray(ents) ? ents : []);
+        setCategoryItems(Array.isArray(cats) ? (cats as CategoryItem[]) : []);
+        setCategories(Array.isArray(cats) ? ((cats as CategoryItem[]).map((c) => c.name) as Category[]) : []);
+        // Note: do not fetch /users on startup (may require auth)
       } catch (err) {
         console.error("Failed to load initial data", err);
       }
@@ -95,6 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res && res.email) {
         setUser(res as User);
         localStorage.setItem("authUser", JSON.stringify(res));
+        // After successful login, replay any requests that were queued due to 401
+        try {
+          api.replayFailedRequests();
+        } catch (e) {
+          // ignore
+        }
         return true;
       }
     } catch (err) {

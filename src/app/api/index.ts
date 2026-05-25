@@ -1,9 +1,42 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import type { Enterprise, Product, User, Category, CategoryItem } from "../types";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
 const client = axios.create({ baseURL: API_BASE + "/api" });
+
+// Queue for requests that receive 401 and should be replayed after login
+type QueuedRequest = {
+  config: AxiosRequestConfig;
+  resolve: (value?: any) => void;
+  reject: (error?: any) => void;
+};
+
+let failedQueue: QueuedRequest[] = [];
+
+client.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    const { response, config } = err || {};
+    if (response && response.status === 401 && config) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ config, resolve, reject });
+      });
+    }
+    return Promise.reject(err);
+  }
+);
+
+export function replayFailedRequests() {
+  const queue = failedQueue.slice();
+  failedQueue = [];
+  queue.forEach(({ config, resolve, reject }) => {
+    client
+      .request(config)
+      .then((r) => resolve(r.data))
+      .catch((e) => reject(e));
+  });
+}
 
 export async function getCategories(): Promise<Category[]> {
   const res = await client.get("/categories");
