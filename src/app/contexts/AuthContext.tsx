@@ -112,6 +112,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem("authUser");
   };
+  
+  // Clear any queued requests when logging out
+  useEffect(() => {
+    if (!user) {
+      try {
+        api.clearFailedQueue();
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [user]);
 
   // Enterprise CRUD
   const addEnterprise = async (enterprise: Partial<Enterprise>) => {

@@ -5,6 +5,23 @@ const API_BASE = import.meta.env.VITE_API_URL;
 
 const client = axios.create({ baseURL: API_BASE + "/api" });
 
+// Attach Authorization header from stored authUser (if present)
+client.interceptors.request.use((config) => {
+  try {
+    const saved = localStorage.getItem("authUser");
+    if (saved) {
+      const parsed = JSON.parse(saved as string) as any;
+      const token = parsed?.token || parsed?.accessToken || parsed?.authToken;
+      if (token) {
+        config.headers = { ...(config.headers || {}), Authorization: `Bearer ${token}` };
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return config;
+});
+
 // Queue for requests that receive 401 and should be replayed after login
 type QueuedRequest = {
   config: AxiosRequestConfig;
@@ -36,6 +53,10 @@ export function replayFailedRequests() {
       .then((r) => resolve(r.data))
       .catch((e) => reject(e));
   });
+}
+
+export function clearFailedQueue() {
+  failedQueue = [];
 }
 
 export async function getCategories(): Promise<Category[]> {
