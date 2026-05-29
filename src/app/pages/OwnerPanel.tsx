@@ -153,7 +153,7 @@ function ProductForm({
   onClose,
 }: {
   initial?: Partial<Product>;
-  onSave: (data: Partial<Product>) => void;
+  onSave: (data: Partial<Product>) => Promise<void> | void;
   onClose: () => void;
 }) {
   const initialPriceMode = resolvePriceMode(initial || {});
@@ -181,6 +181,70 @@ function ProductForm({
   };
   const [productNameError, setProductNameError] = useState("");
   const [productPriceError, setProductPriceError] = useState("");
+
+  const handleSave = async () => {
+    setProductNameError("");
+    setProductPriceError("");
+    if (!form.name) {
+      setProductNameError("Campo obrigatório");
+      throw new Error("Validation Error");
+    }
+    if (form.priceMode === "single") {
+      if (!form.price) {
+        setProductPriceError("Campo obrigatório");
+        throw new Error("Validation Error");
+      }
+      const singlePrice = parseFloat(form.price.replace(",", "."));
+      if (Number.isNaN(singlePrice) || singlePrice < 0) {
+        setProductPriceError("Informe um preço válido");
+        throw new Error("Validation Error");
+      }
+      await onSave({
+        name: form.name,
+        description: form.description,
+        image: form.image,
+        images: form.images,
+        priceMode: "single",
+        price: singlePrice,
+      });
+      return;
+    }
+    if (form.priceMode === "range") {
+      if (!form.priceMin || !form.priceMax) {
+        setProductPriceError("Preencha mínimo e máximo");
+        throw new Error("Validation Error");
+      }
+      const min = parseFloat(form.priceMin.replace(",", "."));
+      const max = parseFloat(form.priceMax.replace(",", "."));
+      if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
+        setProductPriceError("Informe uma faixa válida");
+        throw new Error("Validation Error");
+      }
+      if (min > max) {
+        setProductPriceError("O mínimo não pode ser maior que o máximo");
+        throw new Error("Validation Error");
+      }
+      await onSave({
+        name: form.name,
+        description: form.description,
+        image: form.image,
+        images: form.images,
+        priceMode: "range",
+        price: min,
+        priceMin: min,
+        priceMax: max,
+      });
+      return;
+    }
+    await onSave({
+      name: form.name,
+      description: form.description,
+      image: form.image,
+      images: form.images,
+      priceMode: "hidden",
+      price: 0,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -288,86 +352,15 @@ function ProductForm({
         />
       </Field>
       <div className="flex gap-3 pt-2">
-        <button
-          onClick={() => {
-            setProductNameError("");
-            setProductPriceError("");
-            if (!form.name) {
-              setProductNameError("Campo obrigatório");
-              return;
-            }
-            if (form.priceMode === "single") {
-              if (!form.price) {
-                setProductPriceError("Campo obrigatório");
-                return;
-              }
-              const singlePrice = parseFloat(form.price.replace(",", "."));
-              if (Number.isNaN(singlePrice) || singlePrice < 0) {
-                setProductPriceError("Informe um preço válido");
-                return;
-              }
-              onSave({
-                name: form.name,
-                description: form.description,
-                image: form.image,
-                images: form.images,
-                priceMode: "single",
-                price: singlePrice,
-              });
-              return;
-            }
-            if (form.priceMode === "range") {
-              if (!form.priceMin || !form.priceMax) {
-                setProductPriceError("Preencha mínimo e máximo");
-                return;
-              }
-              const min = parseFloat(form.priceMin.replace(",", "."));
-              const max = parseFloat(form.priceMax.replace(",", "."));
-              if (
-                Number.isNaN(min) ||
-                Number.isNaN(max) ||
-                min < 0 ||
-                max < 0
-              ) {
-                setProductPriceError("Informe uma faixa válida");
-                return;
-              }
-              if (min > max) {
-                setProductPriceError(
-                  "O mínimo não pode ser maior que o máximo",
-                );
-                return;
-              }
-              onSave({
-                name: form.name,
-                description: form.description,
-                image: form.image,
-                images: form.images,
-                priceMode: "range",
-                price: min,
-                priceMin: min,
-                priceMax: max,
-              });
-              return;
-            }
-            onSave({
-              name: form.name,
-              description: form.description,
-              image: form.image,
-              images: form.images,
-              priceMode: "hidden",
-              price: 0,
-            });
-          }}
+        <SubmitButton
+          onClick={handleSave}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-white font-bold shadow-md transition-all hover:scale-[1.01]"
           style={{
             background: "linear-gradient(135deg, #7C3AED, #EA580C)",
             fontFamily: "Nunito, sans-serif",
           }}
-        >
-          <Check className="w-4 h-4" />
-          Salvar produto
-        </button>
+          idleText="Salvar produto"
+        />
         <button
           onClick={onClose}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-all"
