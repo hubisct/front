@@ -29,7 +29,7 @@ import { SubmitButton } from "../components/SubmitButton";
 import { getProductPriceLabel, resolvePriceMode } from "../utils/pricing";
 import { getPrimaryProductImage, getProductImages } from "../utils/productImages";
 import QRCode from "react-qr-code";
-import { getCategoryColors } from "../utils/categoryStyle";
+import { getCategoryColors, getCategoryMeta } from "../utils/categoryStyle";
 
 import { Modal } from "../components/shared/Modal";
 import { Field, inputCls } from "../components/shared/Field";
@@ -274,8 +274,7 @@ export function OwnerPanel() {
     categoryItems,
   } = useAuth();
 
-  const getCategoryMeta = (name: string) =>
-    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  
 
   const [editingEnterprise, setEditingEnterprise] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -486,7 +485,7 @@ export function OwnerPanel() {
               </div>
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
                 <button
-                  onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
+                  onClick={() => exportCatalogPDF(e, getCategoryMeta(categoryItems, e.category))}
                   className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-bold shadow-md backdrop-blur-sm border border-white/30 hover:bg-white/20 transition-colors"
                   style={{
                     background: "rgba(124,58,237,0.7)",
@@ -616,7 +615,7 @@ export function OwnerPanel() {
               Ver página pública
             </Link>
               <button
-                onClick={() => exportCatalogPDF(e, getCategoryMeta(e.category))}
+                onClick={() => exportCatalogPDF(e, getCategoryMeta(categoryItems, e.category))}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-orange-700 bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >

@@ -1,3 +1,10 @@
+import type { CategoryItem } from "../types";
+
+export function getCategoryMeta(categoryItems: CategoryItem[], name: string) {
+  if (!name) return undefined;
+  return categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
+}
+
 export function getCategoryColors(color?: string | null) {
   const safe = isValidHexColor(color) ? color! : "#E5E7EB";
   return {
