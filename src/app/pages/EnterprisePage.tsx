@@ -75,6 +75,54 @@ export function EnterprisePage() {
   const canExportPDF =
     isAdmin || (isOwner && myEnterprise?.id === enterprise?.id);
 
+  // ── FILTERING & SORTING ──────────────────────────────────
+  // Must be declared before any early return to satisfy the Rules of Hooks.
+  const filteredProducts = useMemo(() => {
+    if (!enterprise) return [];
+    const query = searchQuery.trim().toLowerCase();
+    let result = enterprise.products;
+
+    // Text search
+    if (query) {
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          (p.description || "").toLowerCase().includes(query),
+      );
+    }
+
+    // Price range filter
+    if (priceRange !== "all") {
+      result = result.filter((p) => matchesPriceRange(p, priceRange));
+    }
+
+    // Sorting
+    if (sortMode !== "default") {
+      result = [...result].sort((a, b) => {
+        switch (sortMode) {
+          case "name-asc":
+            return a.name.localeCompare(b.name, "pt-BR");
+          case "name-desc":
+            return b.name.localeCompare(a.name, "pt-BR");
+          case "price-asc": {
+            const pa = getEffectivePrice(a) ?? Infinity;
+            const pb = getEffectivePrice(b) ?? Infinity;
+            return pa - pb;
+          }
+          case "price-desc": {
+            const pa = getEffectivePrice(a) ?? -Infinity;
+            const pb = getEffectivePrice(b) ?? -Infinity;
+            return pb - pa;
+          }
+          default:
+            return 0;
+        }
+      });
+    }
+
+    return result;
+  }, [enterprise, searchQuery, priceRange, sortMode]);
+
   if (!enterprise) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
@@ -121,52 +169,6 @@ export function EnterprisePage() {
     `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`,
   );
   const whatsappUrl = `https://wa.me/${normalizedWhatsapp}?text=${whatsappMessage}`;
-
-  // ── FILTERING & SORTING ──────────────────────────────────
-  const filteredProducts = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    let result = enterprise.products;
-
-    // Text search
-    if (query) {
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          (p.description || "").toLowerCase().includes(query),
-      );
-    }
-
-    // Price range filter
-    if (priceRange !== "all") {
-      result = result.filter((p) => matchesPriceRange(p, priceRange));
-    }
-
-    // Sorting
-    if (sortMode !== "default") {
-      result = [...result].sort((a, b) => {
-        switch (sortMode) {
-          case "name-asc":
-            return a.name.localeCompare(b.name, "pt-BR");
-          case "name-desc":
-            return b.name.localeCompare(a.name, "pt-BR");
-          case "price-asc": {
-            const pa = getEffectivePrice(a) ?? Infinity;
-            const pb = getEffectivePrice(b) ?? Infinity;
-            return pa - pb;
-          }
-          case "price-desc": {
-            const pa = getEffectivePrice(a) ?? -Infinity;
-            const pb = getEffectivePrice(b) ?? -Infinity;
-            return pb - pa;
-          }
-          default:
-            return 0;
-        }
-      });
-    }
-
-    return result;
-  }, [enterprise.products, searchQuery, priceRange, sortMode]);
 
   const isFiltered =
     searchQuery.trim() !== "" || priceRange !== "all" || sortMode !== "default";
