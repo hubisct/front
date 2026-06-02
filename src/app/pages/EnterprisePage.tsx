@@ -6,20 +6,70 @@ import {
   ShoppingBag,
   ExternalLink,
   FileDown,
+  Search,
+  SlidersHorizontal,
+  ArrowUpDown,
+  X,
+  SearchX,
 } from "lucide-react";
 import { ProductCard } from "../components/ProductCard";
 import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { normalizeBrazilPhone } from "../utils/validation";
 import { useEffect } from "react";
 import { getCategoryColors } from "../utils/categoryStyle";
+import { resolvePriceMode } from "../utils/pricing";
+import type { Product } from "../types";
+
+type SortMode = "default" | "name-asc" | "name-desc" | "price-asc" | "price-desc";
+type PriceRange = "all" | "0-25" | "25-50" | "50-100" | "100+";
+
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: "default", label: "Padrão" },
+  { value: "name-asc", label: "Nome A→Z" },
+  { value: "name-desc", label: "Nome Z→A" },
+  { value: "price-asc", label: "Menor preço" },
+  { value: "price-desc", label: "Maior preço" },
+];
+
+const PRICE_RANGES: { value: PriceRange; label: string }[] = [
+  { value: "all", label: "Todos" },
+  { value: "0-25", label: "Até R$25" },
+  { value: "25-50", label: "R$25–50" },
+  { value: "50-100", label: "R$50–100" },
+  { value: "100+", label: "R$100+" },
+];
+
+function getEffectivePrice(product: Product): number | null {
+  const mode = resolvePriceMode(product);
+  if (mode === "hidden") return null;
+  if (mode === "range") return product.priceMin ?? product.price ?? null;
+  return product.price ?? null;
+}
+
+function matchesPriceRange(product: Product, range: PriceRange): boolean {
+  if (range === "all") return true;
+  const price = getEffectivePrice(product);
+  if (price === null) return range === "all";
+  switch (range) {
+    case "0-25":   return price >= 0 && price <= 25;
+    case "25-50":  return price > 25 && price <= 50;
+    case "50-100": return price > 50 && price <= 100;
+    case "100+":   return price > 100;
+    default:       return true;
+  }
+}
 
 export function EnterprisePage() {
   const { id } = useParams<{ id: string }>();
   const { enterprises, isAdmin, isOwner, myEnterprise, categoryItems } = useAuth();
   const enterprise = enterprises.find((e) => e.id === id);
   const [expanded, setExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortMode, setSortMode] = useState<SortMode>("default");
+  const [priceRange, setPriceRange] = useState<PriceRange>("all");
+  const [showFilters, setShowFilters] = useState(false);
 
   // Can user export PDF?
   const canExportPDF =
@@ -71,6 +121,61 @@ export function EnterprisePage() {
     `Olá! Conheci o empreendimento "${enterprise.name}" na Vitrine Social da Incubadora UFSM. Gostaria de saber mais!`,
   );
   const whatsappUrl = `https://wa.me/${normalizedWhatsapp}?text=${whatsappMessage}`;
+
+  // ── FILTERING & SORTING ──────────────────────────────────
+  const filteredProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    let result = enterprise.products;
+
+    // Text search
+    if (query) {
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          (p.description || "").toLowerCase().includes(query),
+      );
+    }
+
+    // Price range filter
+    if (priceRange !== "all") {
+      result = result.filter((p) => matchesPriceRange(p, priceRange));
+    }
+
+    // Sorting
+    if (sortMode !== "default") {
+      result = [...result].sort((a, b) => {
+        switch (sortMode) {
+          case "name-asc":
+            return a.name.localeCompare(b.name, "pt-BR");
+          case "name-desc":
+            return b.name.localeCompare(a.name, "pt-BR");
+          case "price-asc": {
+            const pa = getEffectivePrice(a) ?? Infinity;
+            const pb = getEffectivePrice(b) ?? Infinity;
+            return pa - pb;
+          }
+          case "price-desc": {
+            const pa = getEffectivePrice(a) ?? -Infinity;
+            const pb = getEffectivePrice(b) ?? -Infinity;
+            return pb - pa;
+          }
+          default:
+            return 0;
+        }
+      });
+    }
+
+    return result;
+  }, [enterprise.products, searchQuery, priceRange, sortMode]);
+
+  const isFiltered =
+    searchQuery.trim() !== "" || priceRange !== "all" || sortMode !== "default";
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setPriceRange("all");
+    setSortMode("default");
+  };
 
   return (
     <div className="w-full">
@@ -220,7 +325,7 @@ export function EnterprisePage() {
           {/* ── RIGHT COLUMN: Products ─────────────────────────── */}
           <div className="lg:col-span-2">
             {/* Section header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <div
@@ -253,23 +358,168 @@ export function EnterprisePage() {
                   className="text-purple-700 font-bold text-sm"
                   style={{ fontFamily: "Nunito, sans-serif" }}
                 >
-                  {enterprise.products.length} produto
+                  {isFiltered
+                    ? `${filteredProducts.length} de ${enterprise.products.length}`
+                    : enterprise.products.length}{" "}
+                  produto
                   {enterprise.products.length !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
 
-            {/* Products grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
-              {enterprise.products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  whatsapp={normalizedWhatsapp}
-                  enterpriseName={enterprise.name}
-                />
-              ))}
+            {/* ── SEARCH & FILTER TOOLBAR ────────────────────── */}
+            <div className="mb-6 space-y-3">
+              {/* Search bar + filter toggle */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <input
+                    id="product-search"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar produtos..."
+                    className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all shadow-sm"
+                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label="Limpar busca"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Sort select */}
+                <div className="relative">
+                  <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <select
+                    id="product-sort"
+                    value={sortMode}
+                    onChange={(e) => setSortMode(e.target.value as SortMode)}
+                    className="appearance-none pl-9 pr-8 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all shadow-sm cursor-pointer"
+                    style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Filter toggle button */}
+                <button
+                  type="button"
+                  id="product-filter-toggle"
+                  onClick={() => setShowFilters((v) => !v)}
+                  className={[
+                    "flex items-center gap-1.5 px-4 py-2.5 rounded-xl border text-sm font-bold transition-all shadow-sm",
+                    showFilters || priceRange !== "all"
+                      ? "bg-purple-50 border-purple-300 text-purple-700"
+                      : "bg-white border-gray-200 text-gray-600 hover:border-gray-300",
+                  ].join(" ")}
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <span className="hidden sm:inline">Filtros</span>
+                </button>
+              </div>
+
+              {/* Price range filter pills */}
+              {showFilters && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <span
+                    className="text-xs font-bold text-gray-500 self-center mr-1"
+                    style={{ fontFamily: "Nunito, sans-serif" }}
+                  >
+                    Faixa de preço:
+                  </span>
+                  {PRICE_RANGES.map((range) => (
+                    <button
+                      key={range.value}
+                      type="button"
+                      onClick={() => setPriceRange(range.value)}
+                      className={[
+                        "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
+                        priceRange === range.value
+                          ? "bg-purple-600 text-white border-purple-600 shadow-sm"
+                          : "bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-700",
+                      ].join(" ")}
+                      style={{ fontFamily: "Nunito, sans-serif" }}
+                    >
+                      {range.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Active filter indicator */}
+              {isFiltered && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 text-xs font-bold text-purple-600 hover:text-purple-800 transition-colors"
+                    style={{ fontFamily: "Nunito, sans-serif" }}
+                  >
+                    <X className="w-3 h-3" />
+                    Limpar filtros
+                  </button>
+                </div>
+              )}
             </div>
+
+            {/* Products grid */}
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    whatsapp={normalizedWhatsapp}
+                    enterpriseName={enterprise.name}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 mb-8">
+                <div
+                  className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mb-4"
+                >
+                  <SearchX className="w-7 h-7 text-purple-400" />
+                </div>
+                <p
+                  className="text-gray-700 mb-1"
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                  }}
+                >
+                  Nenhum produto encontrado
+                </p>
+                <p
+                  className="text-gray-500 text-sm mb-4 text-center"
+                  style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}
+                >
+                  Tente ajustar seus filtros ou termos de busca.
+                </p>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 transition-all"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  <X className="w-4 h-4" />
+                  Limpar filtros
+                </button>
+              </div>
+            )}
 
             {/* Tags and Contact sections below products */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
