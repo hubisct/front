@@ -17,7 +17,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { useState, useMemo } from "react";
 import { normalizeBrazilPhone } from "../utils/validation";
-import { useEffect } from "react";
 import { getCategoryColors } from "../utils/categoryStyle";
 import { resolvePriceMode } from "../utils/pricing";
 import type { Product } from "../types";

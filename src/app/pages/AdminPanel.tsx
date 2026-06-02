@@ -1091,12 +1091,8 @@ export function AdminPanel() {
     load();
   }, [user, isAdmin]);
 
-  if (!user || !isAdmin) return null;
-
-  const ownerUsers = users.filter((u) => u.role === "owner");
-  const adminUsers = users.filter((u) => u.role === "admin");
-  const getCategoryMeta = (name: string) =>
-    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  // Compute totalCategoryPages before the early return so the useEffect
+  // below can reference it without violating the Rules of Hooks.
   const sortedCategories = [...categoryItems].sort((a, b) =>
     a.name.localeCompare(b.name, "pt-BR"),
   );
@@ -1105,17 +1101,24 @@ export function AdminPanel() {
     1,
     Math.ceil(sortedCategories.length / categoriesPerPage),
   );
-  const categoryStart = (categoryPage - 1) * categoriesPerPage;
-  const pagedCategories = sortedCategories.slice(
-    categoryStart,
-    categoryStart + categoriesPerPage,
-  );
 
   useEffect(() => {
     if (categoryPage > totalCategoryPages) {
       setCategoryPage(totalCategoryPages);
     }
   }, [categoryPage, totalCategoryPages]);
+
+  if (!user || !isAdmin) return null;
+
+  const ownerUsers = users.filter((u) => u.role === "owner");
+  const adminUsers = users.filter((u) => u.role === "admin");
+  const getCategoryMeta = (name: string) =>
+    categoryItems.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  const categoryStart = (categoryPage - 1) * categoriesPerPage;
+  const pagedCategories = sortedCategories.slice(
+    categoryStart,
+    categoryStart + categoriesPerPage,
+  );
 
   const resolveCategoryError = (err: unknown, action: "save" | "delete") => {
     const status = (err as any)?.response?.status;
