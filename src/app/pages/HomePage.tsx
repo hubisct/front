@@ -1,20 +1,24 @@
 import { useState, useMemo } from "react";
 import { Search, X, Sparkles } from "lucide-react";
 import { EnterpriseCard } from "../components/EnterpriseCard";
+import { SupportSection } from "../components/SupportSection";
 import type { Category } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { getCategoryColors } from "../utils/categoryStyle";
 
-const HERO_BG = "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const HERO_BG =
+  "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
 export function HomePage() {
   useEffect(() => {
-      document.title = "Vitrine HUBIS";
-    }, []);
+    document.title = "Vitrine HUBIS";
+  }, []);
 
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<Category | "Todas">("Todas");
+  const [selectedCategory, setSelectedCategory] = useState<Category | "Todas">(
+    "Todas",
+  );
   const { enterprises, categories, categoryItems } = useAuth();
 
   const getCategoryMeta = (name: string) =>
@@ -30,7 +34,7 @@ export function HomePage() {
         e.products.some(
           (p) =>
             p.name.toLowerCase().includes(search.toLowerCase()) ||
-            p.description.toLowerCase().includes(search.toLowerCase())
+            p.description.toLowerCase().includes(search.toLowerCase()),
         );
       const matchesCategory =
         selectedCategory === "Todas" || e.category === selectedCategory;
@@ -73,8 +77,18 @@ export function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 mb-6">
-            <svg className="w-4 h-4 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            <svg
+              className="w-4 h-4 text-yellow-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+              />
             </svg>
             <span
               className="text-white text-sm font-semibold"
@@ -137,7 +151,7 @@ export function HomePage() {
                 </button>
               )}
             </div>
-            
+
             {/* Category filters - Always visible and more discrete */}
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -151,7 +165,7 @@ export function HomePage() {
               >
                 Todas
               </button>
-              {categories.map((cat) => (
+              {categories.map((cat) =>
                 (() => {
                   const meta = getCategoryMeta(cat);
                   const colors = getCategoryColors(meta?.color);
@@ -175,22 +189,27 @@ export function HomePage() {
                       {cat}
                     </button>
                   );
-                })()
-              ))}
+                })(),
+              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* ── ENTERPRISES GRID ─────────────────────────────────────── */}
-      <section id="empreendimentos" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <section
+        id="empreendimentos"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14"
+      >
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <div
                 className="w-1 h-6 rounded-full"
-                style={{ background: "linear-gradient(180deg, #7C3AED, #EA580C)" }}
+                style={{
+                  background: "linear-gradient(180deg, #7C3AED, #EA580C)",
+                }}
               />
               <span
                 className="text-purple-700 font-bold text-sm uppercase tracking-wider"
@@ -207,7 +226,9 @@ export function HomePage() {
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
               }}
             >
-              {hasActiveFilters ? "Resultados da busca" : "Conheça os empreendimentos"}
+              {hasActiveFilters
+                ? "Resultados da busca"
+                : "Conheça os empreendimentos"}
             </h2>
           </div>
           <div className="flex items-center gap-3">
@@ -241,7 +262,11 @@ export function HomePage() {
             <div className="text-6xl mb-4">🔍</div>
             <h3
               className="text-gray-700 mb-2"
-              style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "1.3rem" }}
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: 700,
+                fontSize: "1.3rem",
+              }}
             >
               Nenhum resultado encontrado
             </h3>
@@ -249,13 +274,16 @@ export function HomePage() {
               className="text-gray-500 mb-6 max-w-md"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
-              Não encontramos empreendimentos ou produtos com esses termos. Tente
-              outras palavras ou limpe os filtros.
+              Não encontramos empreendimentos ou produtos com esses termos.
+              Tente outras palavras ou limpe os filtros.
             </p>
             <button
               onClick={clearFilters}
               className="px-6 py-3 rounded-2xl text-white font-bold shadow-md hover:shadow-lg transition-all"
-              style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+              style={{
+                background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                fontFamily: "Nunito, sans-serif",
+              }}
             >
               Ver todos os empreendimentos
             </button>
@@ -264,13 +292,27 @@ export function HomePage() {
       </section>
 
       {/* ── ABOUT SECTION ────────────────────────────────────────── */}
-      <section id="sobre-incubadora" className="py-16 overflow-hidden relative"
-        style={{ background: "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 50%, #EFF6FF 100%)" }}>
+      <section
+        id="sobre-incubadora"
+        className="py-16 overflow-hidden relative"
+        style={{
+          background:
+            "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 50%, #EFF6FF 100%)",
+        }}
+      >
         {/* Decorative elements */}
-        <div className="absolute top-8 right-8 w-32 h-32 rounded-full opacity-30"
-          style={{ background: "radial-gradient(circle, #FBBF24, transparent)" }} />
-        <div className="absolute bottom-8 left-8 w-24 h-24 rounded-full opacity-30"
-          style={{ background: "radial-gradient(circle, #7C3AED, transparent)" }} />
+        <div
+          className="absolute top-8 right-8 w-32 h-32 rounded-full opacity-30"
+          style={{
+            background: "radial-gradient(circle, #FBBF24, transparent)",
+          }}
+        />
+        <div
+          className="absolute bottom-8 left-8 w-24 h-24 rounded-full opacity-30"
+          style={{
+            background: "radial-gradient(circle, #7C3AED, transparent)",
+          }}
+        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -278,7 +320,10 @@ export function HomePage() {
             <div>
               <div className="inline-flex items-center gap-2 bg-purple-100 border border-purple-200 rounded-full px-4 py-1.5 mb-5">
                 <Sparkles className="w-4 h-4 text-purple-600" />
-                <span className="text-purple-700 text-sm font-bold" style={{ fontFamily: "Nunito, sans-serif" }}>
+                <span
+                  className="text-purple-700 text-sm font-bold"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
                   Sobre a Incubadora
                 </span>
               </div>
@@ -296,19 +341,28 @@ export function HomePage() {
               </h2>
               <p
                 className="text-gray-600 leading-relaxed mb-5"
-                style={{ fontFamily: "Nunito, sans-serif", fontSize: "1.05rem", fontWeight: 600 }}
+                style={{
+                  fontFamily: "Nunito, sans-serif",
+                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                }}
               >
-                A Incubadora Social da UFSM apoia empreendimentos de base comunitária e
-                solidária, oferecendo suporte técnico, capacitação e visibilidade para
-                pequenos negócios que geram impacto social positivo.
+                A Incubadora Social da UFSM apoia empreendimentos de base
+                comunitária e solidária, oferecendo suporte técnico, capacitação
+                e visibilidade para pequenos negócios que geram impacto social
+                positivo.
               </p>
               <p
                 className="text-gray-600 leading-relaxed mb-8"
-                style={{ fontFamily: "Nunito, sans-serif", fontSize: "1.05rem", fontWeight: 600 }}
+                style={{
+                  fontFamily: "Nunito, sans-serif",
+                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                }}
               >
-                Nossa missão é fortalecer a economia solidária, promover a inclusão produtiva
-                e valorizar o trabalho criativo e artesanal de pessoas e comunidades de
-                Santa Maria e região.
+                Nossa missão é fortalecer a economia solidária, promover a
+                inclusão produtiva e valorizar o trabalho criativo e artesanal
+                de pessoas e comunidades de Santa Maria e região.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
@@ -316,7 +370,10 @@ export function HomePage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-2xl text-white font-bold shadow-md hover:shadow-lg transition-all hover:scale-105"
-                  style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
+                  style={{
+                    background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+                    fontFamily: "Nunito, sans-serif",
+                  }}
                 >
                   Conheça a UFSM
                 </a>
@@ -335,10 +392,26 @@ export function HomePage() {
             {/* Feature cards */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: "🤝", title: "Comunidade", desc: "Empreendimentos com foco em impacto social e inclusão" },
-                { icon: "🌱", title: "Sustentabilidade", desc: "Produtos ecológicos e práticas responsáveis com o meio ambiente" },
-                { icon: "💡", title: "Inovação", desc: "Criatividade e originalidade em cada produto oferecido" },
-                { icon: "❤️", title: "Solidariedade", desc: "Economia solidária que valoriza as pessoas e o trabalho digno" },
+                {
+                  icon: "🤝",
+                  title: "Comunidade",
+                  desc: "Empreendimentos com foco em impacto social e inclusão",
+                },
+                {
+                  icon: "🌱",
+                  title: "Sustentabilidade",
+                  desc: "Produtos ecológicos e práticas responsáveis com o meio ambiente",
+                },
+                {
+                  icon: "💡",
+                  title: "Inovação",
+                  desc: "Criatividade e originalidade em cada produto oferecido",
+                },
+                {
+                  icon: "❤️",
+                  title: "Solidariedade",
+                  desc: "Economia solidária que valoriza as pessoas e o trabalho digno",
+                },
               ].map((card, i) => (
                 <div
                   key={i}
@@ -347,13 +420,21 @@ export function HomePage() {
                   <div className="text-3xl mb-3">{card.icon}</div>
                   <h4
                     className="text-gray-800 mb-1"
-                    style={{ fontFamily: "Poppins, sans-serif", fontWeight: 700, fontSize: "0.95rem" }}
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "0.95rem",
+                    }}
                   >
                     {card.title}
                   </h4>
                   <p
                     className="text-gray-500"
-                    style={{ fontFamily: "Nunito, sans-serif", fontSize: "0.82rem", fontWeight: 600 }}
+                    style={{
+                      fontFamily: "Nunito, sans-serif",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                    }}
                   >
                     {card.desc}
                   </p>
@@ -364,15 +445,25 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ── SUPPORT SECTION ──────────────────────────────────────── */}
+
+      <SupportSection />
+
       {/* ── CTA BANNER ───────────────────────────────────────────── */}
       <section
         className="py-14 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #1E1B4B 0%, #312E81 40%, #1E3A8A 100%)" }}
+        style={{
+          background:
+            "linear-gradient(135deg, #1E1B4B 0%, #312E81 40%, #1E3A8A 100%)",
+        }}
       >
-        <div className="absolute inset-0 opacity-10"
+        <div
+          className="absolute inset-0 opacity-10"
           style={{
-            backgroundImage: "radial-gradient(circle at 20% 50%, #FBBF24 0%, transparent 40%), radial-gradient(circle at 80% 50%, #EA580C 0%, transparent 40%)",
-          }} />
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, #FBBF24 0%, transparent 40%), radial-gradient(circle at 80% 50%, #EA580C 0%, transparent 40%)",
+          }}
+        />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h2
             className="text-white mb-4"
@@ -387,18 +478,27 @@ export function HomePage() {
           </h2>
           <p
             className="text-white/80 mb-8 max-w-2xl mx-auto"
-            style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600, fontSize: "1.05rem" }}
+            style={{
+              fontFamily: "Nunito, sans-serif",
+              fontWeight: 600,
+              fontSize: "1.05rem",
+            }}
           >
-            Se você tem um empreendimento social, comunitário ou solidário e quer receber
-            apoio, capacitação e visibilidade, entre em contato com a equipe da Incubadora
-            Social da UFSM.
+            Se você tem um empreendimento social, comunitário ou solidário e
+            quer receber apoio, capacitação e visibilidade, entre em contato com
+            a equipe da Incubadora Social da UFSM.
           </p>
           <a
             href="https://wa.me/555532208500"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
-            style={{ background: "linear-gradient(135deg, #FBBF24, #EA580C)", color: "#1E1B4B", fontFamily: "Nunito, sans-serif", fontSize: "1.05rem" }}
+            style={{
+              background: "linear-gradient(135deg, #FBBF24, #EA580C)",
+              color: "#1E1B4B",
+              fontFamily: "Nunito, sans-serif",
+              fontSize: "1.05rem",
+            }}
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
