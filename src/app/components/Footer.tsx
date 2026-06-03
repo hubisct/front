@@ -1,4 +1,6 @@
 import { Sprout, MapPin, Phone, Mail, Instagram, ExternalLink, Heart } from "lucide-react";
+import { WhatsAppIcon } from "./shared/WhatsAppIcon";
+
 
 export function Footer() {
   return (
