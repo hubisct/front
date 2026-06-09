@@ -14,7 +14,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isOwner: boolean;
   myEnterprise: Enterprise | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; status?: number }>;
   logout: () => void;
   // Enterprise CRUD
   addEnterprise: (enterprise: Partial<Enterprise>) => Promise<Enterprise | null>;
@@ -109,12 +109,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           console.error("Failed to load users after login", e);
         }
-        return true;
+        return { success: true };
       }
-    } catch (err) {
-      return false;
+    } catch (err: any) {
+      return { success: false, status: err?.response?.status };
     }
-    return false;
+    return { success: false };
   };
 
   // When user state changes, if user is admin fetch users; otherwise clear users
@@ -149,6 +149,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [user]);
+
+  // Listen for token expiration events from api interceptor
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      logout();
+    };
+    window.addEventListener("auth-token-expired", handleTokenExpired);
+    return () => window.removeEventListener("auth-token-expired", handleTokenExpired);
+  }, []);
 
   // Enterprise CRUD
   const addEnterprise = async (enterprise: Partial<Enterprise>) => {

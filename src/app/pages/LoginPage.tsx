@@ -48,12 +48,18 @@ export function LoginPage() {
     }
 
     setLoading(true);
-    const success = await login(email, password);
+    const result = await login(email, password);
     setLoading(false);
-    if (!success) {
-      setError(
-        "E-mail ou senha incorretos. Verifique seus dados e tente novamente.",
-      );
+    if (!result.success) {
+      if (result.status === 401) {
+        setError(
+          "Suas credenciais estão incorretas. Tente novamente.",
+        );
+      } else {
+        setError(
+          "Ocorreu um erro ao tentar fazer login. É possível que o sistema esteja com alguma instabilidade. Tente novamente mais tarde.",
+        );
+      }
     }
   };
 
