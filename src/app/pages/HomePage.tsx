@@ -1,10 +1,14 @@
-import { useState, useMemo } from "react";
-import { Search, X, Sparkles } from "lucide-react";
+import { useState, useMemo, useRef } from "react";
+import { Link } from "react-router";
+import { Search, X, Sparkles, ArrowRight, ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import { EnterpriseCard } from "../components/EnterpriseCard";
-import type { Category } from "../types";
+import type { Category, Enterprise, Product } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { getCategoryColors } from "../utils/categoryStyle";
+import { getPrimaryProductImage } from "../utils/productImages";
+import { getProductPriceLabel } from "../utils/pricing";
+import { normalizeBrazilPhone } from "../utils/validation";
 
 const HERO_BG = "https://images.unsplash.com/photo-1761666520258-e6de315a61c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBlbnRyZXByZW5ldXJzaGlwJTIwc21hbGwlMjBidXNpbmVzcyUyMHBlb3BsZXxlbnwxfHx8fDE3NzQzODMxMTN8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
@@ -15,6 +19,7 @@ export function HomePage() {
 
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | "Todas">("Todas");
+  const featuredProductsRef = useRef<HTMLDivElement>(null);
   const { enterprises, categories, categoryItems } = useAuth();
 
   const getCategoryMeta = (name: string) =>
@@ -44,6 +49,26 @@ export function HomePage() {
   };
 
   const hasActiveFilters = search.trim() !== "" || selectedCategory !== "Todas";
+
+  const featuredProducts = useMemo(() => {
+    return filtered.flatMap((enterprise) =>
+      enterprise.products.map((product) => ({
+        product,
+        enterprise,
+      }))
+    );
+  }, [filtered]);
+
+  const scrollFeaturedProducts = (direction: "left" | "right") => {
+    const container = featuredProductsRef.current;
+    if (!container) return;
+
+    const distance = Math.max(container.clientWidth * 0.8, 280);
+    container.scrollBy({
+      left: direction === "left" ? -distance : distance,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div id="topo" className="w-full">
@@ -181,6 +206,91 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* FEATURED PRODUCTS */}
+      {featuredProducts.length > 0 && (
+        <section className="bg-white py-12 sm:py-14 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div
+                    className="w-1 h-7 rounded-full"
+                    style={{ background: "linear-gradient(180deg, #EA580C, #F59E0B)" }}
+                  />
+                  <span
+                    className="text-orange-600 font-bold text-sm uppercase tracking-wider"
+                    style={{ fontFamily: "Nunito, sans-serif" }}
+                  >
+                    Produtos em destaque
+                  </span>
+                </div>
+                <h2
+                  className="text-gray-900"
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontWeight: 800,
+                    fontSize: "clamp(1.7rem, 3.8vw, 2.5rem)",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Conheça o que nossos{" "}
+                  <span style={{ color: "#7C3AED" }}>empreendedores</span>{" "}
+                  oferecem
+                </h2>
+              </div>
+
+              <a
+                href="#empreendimentos"
+                className="inline-flex items-center gap-2 text-purple-700 font-bold hover:text-orange-600 transition-colors"
+                style={{ fontFamily: "Nunito, sans-serif" }}
+              >
+                Ver todos os empreendimentos
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
+            <div className="relative">
+              <div
+                ref={featuredProductsRef}
+                className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {featuredProducts.map(({ product, enterprise }) => (
+                  <FeaturedProductCard
+                    key={`${enterprise.id}-${product.id}`}
+                    product={product}
+                    enterprise={enterprise}
+                  />
+                ))}
+              </div>
+
+              <div className="absolute inset-y-0 left-0 z-20 flex w-24 items-center bg-gradient-to-r from-white via-white/80 to-transparent group">
+                <button
+                  type="button"
+                  title="Produtos anteriores"
+                  onClick={() => scrollFeaturedProducts("left")}
+                  className="ml-1 flex h-11 w-11 items-center justify-center rounded-full bg-white text-purple-700 opacity-0 shadow-lg ring-1 ring-purple-100 transition-all hover:scale-105 hover:text-orange-600 focus-visible:opacity-100 focus:outline-none focus:ring-2 focus:ring-purple-300 group-hover:opacity-100"
+                  aria-label="Ver produtos anteriores"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="absolute inset-y-0 right-0 z-20 flex w-24 items-center justify-end bg-gradient-to-l from-white via-white/80 to-transparent group">
+                <button
+                  type="button"
+                  title="Próximos produtos"
+                  onClick={() => scrollFeaturedProducts("right")}
+                  className="mr-1 flex h-11 w-11 items-center justify-center rounded-full bg-white text-purple-700 opacity-0 shadow-lg ring-1 ring-purple-100 transition-all hover:scale-105 hover:text-orange-600 focus-visible:opacity-100 focus:outline-none focus:ring-2 focus:ring-purple-300 group-hover:opacity-100"
+                  aria-label="Ver próximos produtos"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── ENTERPRISES GRID ─────────────────────────────────────── */}
       <section id="empreendimentos" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -408,5 +518,128 @@ export function HomePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function FeaturedProductCard({
+  product,
+  enterprise,
+}: {
+  product: Product;
+  enterprise: Enterprise;
+}) {
+  const image = getPrimaryProductImage(product);
+  const priceLabel = getProductPriceLabel(product);
+  const normalizedWhatsapp = normalizeBrazilPhone(enterprise.whatsapp || "");
+  const whatsappMessage = encodeURIComponent(
+    `Olá! Vi o produto "${product.name}" da ${enterprise.name} na Vitrine Social da Incubadora UFSM e tenho interesse. Pode me dar mais informações?`
+  );
+  const whatsappUrl = normalizedWhatsapp
+    ? `https://wa.me/${normalizedWhatsapp}?text=${whatsappMessage}`
+    : "";
+
+  return (
+    <article className="w-[280px] sm:w-[300px] flex-shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <Link
+        to={`/empreendimento/${enterprise.id}`}
+        className="relative block h-48 overflow-hidden bg-gray-100"
+        aria-label={`Ver ${product.name} em ${enterprise.name}`}
+      >
+        {image ? (
+          <img
+            src={image}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-gray-400">
+            <ImageIcon className="h-9 w-9" />
+            <span className="text-xs font-bold" style={{ fontFamily: "Nunito, sans-serif" }}>
+              Sem imagem
+            </span>
+          </div>
+        )}
+
+        <span className="absolute left-3 top-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 text-white shadow-md">
+          <Sparkles className="h-4 w-4" />
+        </span>
+
+        {priceLabel && (
+          <span
+            className="absolute bottom-3 right-3 rounded-full px-3 py-1 text-sm font-black text-white shadow-md"
+            style={{
+              fontFamily: "Nunito, sans-serif",
+              background: "linear-gradient(135deg, #7C3AED, #EA580C)",
+            }}
+          >
+            {priceLabel}
+          </span>
+        )}
+      </Link>
+
+      <div className="flex min-h-[202px] flex-col p-4">
+        <h3
+          className="mb-1 truncate text-gray-950"
+          title={product.name}
+          style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1rem" }}
+        >
+          {product.name}
+        </h3>
+        <Link
+          to={`/empreendimento/${enterprise.id}`}
+          className="mb-3 truncate text-sm font-bold text-purple-700 hover:text-orange-600"
+          title={enterprise.name}
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {enterprise.name}
+        </Link>
+        <p
+          className="mb-4 min-h-[48px] text-sm leading-relaxed text-gray-500"
+          style={{
+            fontFamily: "Nunito, sans-serif",
+            fontWeight: 600,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {product.description}
+        </p>
+
+        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2">
+          {whatsappUrl ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 hover:shadow-md"
+              style={{ fontFamily: "Nunito, sans-serif" }}
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4 flex-shrink-0 fill-current">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              </svg>
+              WhatsApp
+            </a>
+          ) : (
+            <Link
+              to={`/empreendimento/${enterprise.id}`}
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-gray-100 px-4 text-sm font-bold text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-700"
+              style={{ fontFamily: "Nunito, sans-serif" }}
+            >
+              Ver contato
+            </Link>
+          )}
+
+          <Link
+            to={`/empreendimento/${enterprise.id}`}
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-purple-200 px-3 text-sm font-bold text-purple-700 transition-colors hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            Ver +
+          </Link>
+        </div>
+      </div>
+    </article>
   );
 }
