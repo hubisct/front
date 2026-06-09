@@ -264,7 +264,7 @@ export function HomePage() {
                 ))}
               </div>
 
-              <div className="absolute inset-y-0 left-0 z-20 flex w-24 items-center bg-gradient-to-r from-white via-white/80 to-transparent group">
+              <div className="absolute inset-y-0 left-0 z-20 flex w-14 items-center bg-gradient-to-r from-white/90 to-transparent group">
                 <button
                   type="button"
                   title="Produtos anteriores"
@@ -276,7 +276,7 @@ export function HomePage() {
                 </button>
               </div>
 
-              <div className="absolute inset-y-0 right-0 z-20 flex w-24 items-center justify-end bg-gradient-to-l from-white via-white/80 to-transparent group">
+              <div className="absolute inset-y-0 right-0 z-20 flex w-14 items-center justify-end bg-gradient-to-l from-white/90 to-transparent group">
                 <button
                   type="button"
                   title="Próximos produtos"
@@ -539,10 +539,10 @@ function FeaturedProductCard({
     : "";
 
   return (
-    <article className="w-[280px] sm:w-[300px] flex-shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <article className="w-[240px] sm:w-[260px] flex-shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <Link
         to={`/empreendimento/${enterprise.id}`}
-        className="relative block h-48 overflow-hidden bg-gray-100"
+        className="relative block h-36 overflow-hidden bg-gray-100"
         aria-label={`Ver ${product.name} em ${enterprise.name}`}
       >
         {image ? (
@@ -577,43 +577,22 @@ function FeaturedProductCard({
         )}
       </Link>
 
-      <div className="flex min-h-[202px] flex-col p-4">
+      <div className="flex min-h-[132px] flex-col p-4">
         <h3
-          className="mb-1 truncate text-gray-950"
+          className="mb-3 line-clamp-2 text-gray-950"
           title={product.name}
           style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: "1rem" }}
         >
           {product.name}
         </h3>
-        <Link
-          to={`/empreendimento/${enterprise.id}`}
-          className="mb-3 truncate text-sm font-bold text-purple-700 hover:text-orange-600"
-          title={enterprise.name}
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        >
-          {enterprise.name}
-        </Link>
-        <p
-          className="mb-4 min-h-[48px] text-sm leading-relaxed text-gray-500"
-          style={{
-            fontFamily: "Nunito, sans-serif",
-            fontWeight: 600,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {product.description}
-        </p>
 
-        <div className="mt-auto grid grid-cols-[1fr_auto] gap-2">
+        <div className="mt-auto">
           {whatsappUrl ? (
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 hover:shadow-md"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 text-sm font-bold text-white shadow-sm transition-all hover:bg-green-700 hover:shadow-md"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4 flex-shrink-0 fill-current">
@@ -624,20 +603,12 @@ function FeaturedProductCard({
           ) : (
             <Link
               to={`/empreendimento/${enterprise.id}`}
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-gray-100 px-4 text-sm font-bold text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-700"
+              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-gray-100 px-4 text-sm font-bold text-gray-600 transition-colors hover:bg-purple-50 hover:text-purple-700"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
               Ver contato
             </Link>
           )}
-
-          <Link
-            to={`/empreendimento/${enterprise.id}`}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-purple-200 px-3 text-sm font-bold text-purple-700 transition-colors hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
-            Ver +
-          </Link>
         </div>
       </div>
     </article>
