@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
+import * as api from "../api";
 import {
   Pencil,
   Trash2,
@@ -624,8 +625,15 @@ export function OwnerPanel() {
 
   // Protect route
   useEffect(() => {
-    if (!user) navigate("/login");
-    else if (!isOwner) navigate("/admin");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!isOwner) {
+      navigate("/admin");
+      return;
+    }
+    api.verifyAuthSession().catch(() => {});
   }, [user, isOwner, navigate]);
 
   if (!user || !isOwner || !myEnterprise)

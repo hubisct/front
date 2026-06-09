@@ -40,6 +40,7 @@ client.interceptors.response.use(
       const isTokenError = dataStr.toLowerCase().includes("token expired") || dataStr.toLowerCase().includes("invalid token");
       
       if (isTokenError) {
+        sessionStorage.setItem("sessionExpired", "true");
         window.dispatchEvent(new Event("auth-token-expired"));
         return Promise.reject(err);
       }
@@ -165,5 +166,10 @@ export async function deleteUser(id: string) {
 
 export async function login(email: string, password: string) {
   const res = await client.post(`/login`, { email, password });
+  return res.data;
+}
+
+export async function verifyAuthSession() {
+  const res = await client.get(`/auth/verify`);
   return res.data;
 }
