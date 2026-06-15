@@ -649,7 +649,7 @@ export function OwnerPanel() {
           <button
             onClick={() => {
               logout();
-              navigate("/");
+              navigate("/login");
             }}
             className="px-6 py-3 rounded-xl text-white font-bold"
             style={{
@@ -745,7 +745,7 @@ export function OwnerPanel() {
             <button
               onClick={() => {
                 logout();
-                navigate("/");
+                navigate("/login");
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-sm font-bold transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}

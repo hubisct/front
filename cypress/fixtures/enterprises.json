@@ -1,0 +1,109 @@
+[
+  {
+    "id": "aurora",
+    "name": "Costura Criativa Aurora",
+    "category": "Moda",
+    "coverImage": "/logo-hubis.png",
+    "description": "Bolsas, ecobags e presentes costurados à mão por mulheres da comunidade.",
+    "fullDescription": "A Costura Criativa Aurora produz peças têxteis artesanais, reaproveita tecidos e oferece encomendas personalizadas para eventos, feiras e presentes.",
+    "whatsapp": "5555999999999",
+    "instagram": "@auroracriativa",
+    "email": "aurora@example.com",
+    "tags": ["costura", "bolsas", "presente"],
+    "products": [
+      {
+        "id": "bolsa-floral",
+        "name": "Bolsa Floral",
+        "description": "Bolsa dupla face com acabamento reforçado.",
+        "price": 45,
+        "priceMode": "single",
+        "image": "/logo-hubis.png",
+        "images": ["/logo-hubis.png", "/logo-hubis.jpg"]
+      },
+      {
+        "id": "ecobag-bordada",
+        "name": "Ecobag Bordada",
+        "description": "Ecobag personalizada com bordado simples.",
+        "price": 20,
+        "priceMode": "range",
+        "priceMin": 20,
+        "priceMax": 35,
+        "image": "/logo-hubis.jpg",
+        "images": ["/logo-hubis.jpg"]
+      },
+      {
+        "id": "chaveiro-sem-preco",
+        "name": "Chaveiro Sem Preco",
+        "description": "Chaveiro artesanal feito sob encomenda.",
+        "price": 0,
+        "priceMode": "hidden",
+        "image": "",
+        "images": []
+      }
+    ]
+  },
+  {
+    "id": "sabores",
+    "name": "Sabores do Vale",
+    "category": "Alimentação",
+    "coverImage": "/logo-hubis.jpg",
+    "description": "Geleias, doces e cestas produzidos com ingredientes locais.",
+    "fullDescription": "O Sabores do Vale prepara alimentos artesanais em pequenos lotes, valorizando receitas familiares e produtores da região.",
+    "whatsapp": "5555888888888",
+    "instagram": "@saboresdovale",
+    "email": "sabores@example.com",
+    "tags": ["geleia", "doces", "colonial"],
+    "products": [
+      {
+        "id": "geleia-morango",
+        "name": "Geleia de Morango",
+        "description": "Geleia artesanal com morangos da estação.",
+        "price": 18,
+        "priceMode": "single",
+        "image": "/logo-hubis.png",
+        "images": ["/logo-hubis.png"]
+      },
+      {
+        "id": "cesta-colonial",
+        "name": "Cesta Colonial",
+        "description": "Cesta com doces, pães e geleias.",
+        "price": 120,
+        "priceMode": "single",
+        "image": "/logo-hubis.jpg",
+        "images": ["/logo-hubis.jpg"]
+      }
+    ]
+  },
+  {
+    "id": "verde-vivo",
+    "name": "Verde Vivo",
+    "category": "Plantas",
+    "coverImage": "/logo-hubis.png",
+    "description": "Mudas, suculentas e terrários para casas e escritórios.",
+    "fullDescription": "Verde Vivo cultiva plantas ornamentais e monta kits de cuidado para incentivar ambientes mais verdes.",
+    "whatsapp": "5555777777777",
+    "instagram": "@verdevivo",
+    "email": "verde@example.com",
+    "tags": ["plantas", "suculentas", "terrarios"],
+    "products": [
+      {
+        "id": "suculenta-vaso",
+        "name": "Suculenta no Vaso",
+        "description": "Suculenta em vaso de cerâmica.",
+        "price": 22,
+        "priceMode": "single",
+        "image": "/logo-hubis.png",
+        "images": ["/logo-hubis.png"]
+      },
+      {
+        "id": "terrario-medio",
+        "name": "Terrario Medio",
+        "description": "Terrário médio com pedras decorativas.",
+        "price": 85,
+        "priceMode": "single",
+        "image": "/logo-hubis.jpg",
+        "images": ["/logo-hubis.jpg"]
+      }
+    ]
+  }
+]

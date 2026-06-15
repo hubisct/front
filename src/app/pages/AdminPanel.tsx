@@ -1344,7 +1344,7 @@ export function AdminPanel() {
             <button
               onClick={() => {
                 logout();
-                navigate("/");
+                navigate("/login");
               }}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 font-bold text-sm transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
@@ -1390,7 +1390,7 @@ export function AdminPanel() {
               <button
                 onClick={() => {
                   logout();
-                  navigate("/");
+                  navigate("/login");
                 }}
                 className="p-2 rounded-xl text-red-500 hover:bg-red-50"
               >
