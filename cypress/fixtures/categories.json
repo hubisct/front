@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cat-moda",
+    "name": "Moda",
+    "color": "#FBBF24",
+    "emoji": "🧵"
+  },
+  {
+    "id": "cat-alimentacao",
+    "name": "Alimentação",
+    "color": "#EA580C",
+    "emoji": "🍓"
+  },
+  {
+    "id": "cat-plantas",
+    "name": "Plantas",
+    "color": "#16A34A",
+    "emoji": "🌱"
+  },
+  {
+    "id": "cat-artesanato",
+    "name": "Artesanato",
+    "color": "#7C3AED",
+    "emoji": "🏷️"
+  }
+]

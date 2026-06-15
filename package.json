@@ -70,6 +70,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
+    "cypress": "^15.17.0",
     "tailwindcss": "4.1.12",
     "vite": "^6.4.2"
   },
