@@ -3,8 +3,8 @@ import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 5;
-const WHEEL_ZOOM_STEP = 0.0035;
+const MAX_ZOOM = 10;
+const WHEEL_ZOOM_STEP = 0.1;
 
 function clampZoom(value: number) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
