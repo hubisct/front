@@ -19,6 +19,7 @@ import type { Product, Category } from "../types";
 import { exportCatalogPDF } from "../utils/pdfExport";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ImageUploadField } from "../components/ImageUploadField";
+import { ProductImageLightbox } from "../components/ProductImageLightbox";
 import { ProductImageGalleryField } from "../components/ProductImageGalleryField";
 import {
   isValidEmail,
@@ -621,6 +622,8 @@ export function OwnerPanel() {
     null,
   );
   const [showQrCode, setShowQrCode] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+  const [previewImageIndex, setPreviewImageIndex] = useState(0);
 
   // Protect route
   useEffect(() => {
@@ -1030,28 +1033,40 @@ export function OwnerPanel() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {e.products.map((p) => (
+              {e.products.map((p) => {
+                const productImages = getProductImages(p);
+                const primaryImage = productImages[0] || getPrimaryProductImage(p);
+
+                return (
                 <div
                   key={p.id}
                   className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
                 >
-                  {getPrimaryProductImage(p) && (
-                    <div className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex items-center justify-center border-b border-gray-100">
+                  {primaryImage && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewProduct(p);
+                        setPreviewImageIndex(0);
+                      }}
+                      className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex w-full items-center justify-center border-b border-gray-100"
+                      aria-label={`Ampliar imagem de ${p.name}`}
+                    >
                       <div
                         className="absolute inset-0 bg-cover bg-center blur-2xl opacity-50 scale-125 transition-transform duration-500 group-hover:scale-[1.35]"
-                        style={{ backgroundImage: `url(${getPrimaryProductImage(p)})` }}
+                        style={{ backgroundImage: `url(${primaryImage})` }}
                       />
                       <img
-                        src={getPrimaryProductImage(p)}
+                        src={primaryImage}
                         alt={p.name}
                         className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
                       />
-                      {getProductImages(p).length > 1 && (
+                      {productImages.length > 1 && (
                         <span className="absolute right-2 top-2 z-20 rounded-full bg-white/95 px-2 py-1 text-xs font-bold text-purple-700 shadow">
-                          {getProductImages(p).length} fotos
+                          {productImages.length} fotos
                         </span>
                       )}
-                    </div>
+                    </button>
                   )}
                   <div className="p-4">
                     <h3
@@ -1104,7 +1119,8 @@ export function OwnerPanel() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -1204,6 +1220,16 @@ export function OwnerPanel() {
             </div>
           </div>
         </Modal>
+      )}
+
+      {previewProduct && (
+        <ProductImageLightbox
+          images={getProductImages(previewProduct)}
+          productName={previewProduct.name}
+          activeIndex={previewImageIndex}
+          onSelect={setPreviewImageIndex}
+          onClose={() => setPreviewProduct(null)}
+        />
       )}
 
       {deleteProductData && (
