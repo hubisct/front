@@ -7,8 +7,12 @@ import { isValidEmail, isValidPassword } from "../utils/validation";
 
 export function LoginPage() {
   useEffect(() => {
-      document.title = "Login | Vitrine HUBIS";
-    }, []);
+    document.title = "Login | Vitrine HUBIS";
+    if (sessionStorage.getItem("sessionExpired")) {
+      setSessionExpiredMsg("Sua sessão expirou e você precisa fazer login novamente.");
+      sessionStorage.removeItem("sessionExpired");
+    }
+  }, []);
 
   const navigate = useNavigate();
   const { login, user } = useAuth();
@@ -20,6 +24,7 @@ export function LoginPage() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sessionExpiredMsg, setSessionExpiredMsg] = useState("");
 
   // Redirect if already logged in or after login
   useEffect(() => {
@@ -48,12 +53,18 @@ export function LoginPage() {
     }
 
     setLoading(true);
-    const success = await login(email, password);
+    const result = await login(email, password);
     setLoading(false);
-    if (!success) {
-      setError(
-        "E-mail ou senha incorretos. Verifique seus dados e tente novamente.",
-      );
+    if (!result.success) {
+      if (result.status === 401) {
+        setError(
+          "Suas credenciais estão incorretas. Tente novamente.",
+        );
+      } else {
+        setError(
+          "Ocorreu um erro ao tentar fazer login. É possível que o sistema esteja com alguma instabilidade. Tente novamente mais tarde.",
+        );
+      }
     }
   };
 
@@ -128,6 +139,16 @@ export function LoginPage() {
 
           {/* Form */}
           <div className="px-8 py-8">
+            {sessionExpiredMsg && (
+              <div className="mb-6 px-4 py-3 rounded-xl bg-orange-50 border border-orange-200 flex items-start gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <p className="text-orange-700 text-sm" style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600 }}>
+                  {sessionExpiredMsg}
+                </p>
+              </div>
+            )}
             <form onSubmit={handleLogin} className="space-y-5">
               {/* Email */}
               <div>

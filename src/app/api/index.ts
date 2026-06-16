@@ -36,6 +36,19 @@ client.interceptors.response.use(
   (err) => {
     const { response, config } = err || {};
     if (response && response.status === 401 && config) {
+      const dataStr = typeof response.data === "string" ? response.data : JSON.stringify(response.data || {});
+      const isTokenError = dataStr.toLowerCase().includes("token expired") || dataStr.toLowerCase().includes("invalid token");
+      
+      if (isTokenError) {
+        sessionStorage.setItem("sessionExpired", "true");
+        window.dispatchEvent(new Event("auth-token-expired"));
+        return Promise.reject(err);
+      }
+      
+      if (config.url === "/login" || config.url?.endsWith("/login")) {
+        return Promise.reject(err);
+      }
+      
       return new Promise((resolve, reject) => {
         failedQueue.push({ config, resolve, reject });
       });
@@ -153,5 +166,10 @@ export async function deleteUser(id: string) {
 
 export async function login(email: string, password: string) {
   const res = await client.post(`/login`, { email, password });
+  return res.data;
+}
+
+export async function verifyAuthSession() {
+  const res = await client.get(`/auth/verify`);
   return res.data;
 }

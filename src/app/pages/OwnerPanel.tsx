@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router";
+import * as api from "../api";
 import {
   Pencil,
   Trash2,
@@ -627,8 +628,15 @@ export function OwnerPanel() {
 
   // Protect route
   useEffect(() => {
-    if (!user) navigate("/login");
-    else if (!isOwner) navigate("/admin");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!isOwner) {
+      navigate("/admin");
+      return;
+    }
+    api.verifyAuthSession().catch(() => {});
   }, [user, isOwner, navigate]);
 
   if (!user || !isOwner || !myEnterprise)
@@ -644,7 +652,7 @@ export function OwnerPanel() {
           <button
             onClick={() => {
               logout();
-              navigate("/");
+              navigate("/login");
             }}
             className="px-6 py-3 rounded-xl text-white font-bold"
             style={{
@@ -740,7 +748,7 @@ export function OwnerPanel() {
             <button
               onClick={() => {
                 logout();
-                navigate("/");
+                navigate("/login");
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-red-600 hover:bg-red-50 text-sm font-bold transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}

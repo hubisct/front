@@ -1068,10 +1068,16 @@ export function AdminPanel() {
   const [editCategory, setEditCategory] = useState<CategoryItem | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<CategoryItem | null>(null);
 
-  // Protect route
   useEffect(() => {
-    if (!user) navigate("/login");
-    else if (!isAdmin) navigate("/painel");
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (!isAdmin) {
+      navigate("/painel");
+      return;
+    }
+    api.verifyAuthSession().catch(() => {});
   }, [user, isAdmin, navigate]);
 
   useEffect(() => {
@@ -1091,7 +1097,7 @@ export function AdminPanel() {
     load();
   }, [user, isAdmin]);
 
-  if (!user || !isAdmin) return null;
+
 
   const ownerUsers = users.filter((u) => u.role === "owner");
   const adminUsers = users.filter((u) => u.role === "admin");
@@ -1116,6 +1122,8 @@ export function AdminPanel() {
       setCategoryPage(totalCategoryPages);
     }
   }, [categoryPage, totalCategoryPages]);
+
+  if (!user || !isAdmin) return null;
 
   const resolveCategoryError = (err: unknown, action: "save" | "delete") => {
     const status = (err as any)?.response?.status;
@@ -1336,7 +1344,7 @@ export function AdminPanel() {
             <button
               onClick={() => {
                 logout();
-                navigate("/");
+                navigate("/login");
               }}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 font-bold text-sm transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
@@ -1382,7 +1390,7 @@ export function AdminPanel() {
               <button
                 onClick={() => {
                   logout();
-                  navigate("/");
+                  navigate("/login");
                 }}
                 className="p-2 rounded-xl text-red-500 hover:bg-red-50"
               >
