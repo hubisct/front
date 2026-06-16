@@ -36,6 +36,10 @@ function getMidpoint(first: Point, second: Point) {
   };
 }
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof Element && Boolean(target.closest("button, a, input, select, textarea"));
+}
+
 export function ProductImageLightbox({
   images,
   productName,
@@ -162,12 +166,14 @@ export function ProductImageLightbox({
 
     const handleGesture = (event: Event) => {
       if (!isInsideLightbox(event)) return;
+      if (isInteractiveTarget(event.target)) return;
       event.preventDefault();
       event.stopPropagation();
     };
 
     const handleTouchStart = (event: TouchEvent) => {
       if (!isInsideLightbox(event)) return;
+      if (event.touches.length === 1 && isInteractiveTarget(event.target)) return;
       event.preventDefault();
       event.stopPropagation();
 
@@ -190,6 +196,7 @@ export function ProductImageLightbox({
 
     const handleTouchMove = (event: TouchEvent) => {
       if (!isInsideLightbox(event)) return;
+      if (event.touches.length === 1 && isInteractiveTarget(event.target)) return;
       event.preventDefault();
       event.stopPropagation();
 

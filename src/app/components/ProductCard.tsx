@@ -85,7 +85,7 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
               showPreviousImage();
               event.currentTarget.blur();
             }}
-            className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-0 shadow-lg transition-all hover:bg-white hover:scale-105 focus-visible:opacity-100 focus:outline-none focus:ring-2 focus:ring-purple-300 group-hover:opacity-100"
+            className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-100 shadow-lg transition-all hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-300 md:opacity-0 md:group-hover:opacity-100"
             aria-label={`Ver foto anterior de ${product.name}`}
             title="Foto anterior"
           >
@@ -101,7 +101,7 @@ export function ProductCard({ product, whatsapp, enterpriseName }: ProductCardPr
               showNextImage();
               event.currentTarget.blur();
             }}
-            className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-0 shadow-lg transition-all hover:bg-white hover:scale-105 focus-visible:opacity-100 focus:outline-none focus:ring-2 focus:ring-purple-300 group-hover:opacity-100"
+            className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-100 shadow-lg transition-all hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-300 md:opacity-0 md:group-hover:opacity-100"
             aria-label={`Ver proxima foto de ${product.name}`}
             title="Proxima foto"
           >
