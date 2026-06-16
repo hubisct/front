@@ -14,6 +14,8 @@ import {
   Store,
   ExternalLink,
   QrCode,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import type { Product, Category } from "../types";
@@ -625,6 +627,7 @@ export function OwnerPanel() {
   const [showQrCode, setShowQrCode] = useState(false);
   const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
   const [previewImageIndex, setPreviewImageIndex] = useState(0);
+  const [productCardImageIndexes, setProductCardImageIndexes] = useState<Record<string, number>>({});
 
   // Protect route
   useEffect(() => {
@@ -1043,38 +1046,83 @@ export function OwnerPanel() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {e.products.map((p) => {
                 const productImages = getProductImages(p);
-                const primaryImage = productImages[0] || getPrimaryProductImage(p);
+                const fallbackImage = getPrimaryProductImage(p);
+                const currentImageIndex = Math.min(
+                  productCardImageIndexes[p.id] || 0,
+                  Math.max(productImages.length - 1, 0),
+                );
+                const selectedProductImage = productImages[currentImageIndex] || fallbackImage;
+                const selectProductImage = (nextIndex: number) => {
+                  setProductCardImageIndexes((currentIndexes) => ({
+                    ...currentIndexes,
+                    [p.id]: Math.min(Math.max(nextIndex, 0), productImages.length - 1),
+                  }));
+                };
 
                 return (
                 <div
                   key={p.id}
                   className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
                 >
-                  {primaryImage && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPreviewProduct(p);
-                        setPreviewImageIndex(0);
-                      }}
-                      className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex w-full items-center justify-center border-b border-gray-100"
-                      aria-label={`Ampliar imagem de ${p.name}`}
-                    >
-                      <div
-                        className="absolute inset-0 bg-cover bg-center blur-2xl opacity-50 scale-125 transition-transform duration-500 group-hover:scale-[1.35]"
-                        style={{ backgroundImage: `url(${primaryImage})` }}
-                      />
-                      <img
-                        src={primaryImage}
-                        alt={p.name}
-                        className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
-                      />
-                      {productImages.length > 1 && (
-                        <span className="absolute right-2 top-2 z-20 rounded-full bg-white/95 px-2 py-1 text-xs font-bold text-purple-700 shadow">
-                          {productImages.length} fotos
-                        </span>
+                  {selectedProductImage && (
+                    <div className="relative overflow-hidden aspect-[4/3] bg-gray-50 flex w-full items-center justify-center border-b border-gray-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreviewProduct(p);
+                          setPreviewImageIndex(currentImageIndex);
+                        }}
+                        className="absolute inset-0 flex items-center justify-center"
+                        aria-label={`Ampliar imagem de ${p.name}`}
+                      >
+                        <div
+                          className="absolute inset-0 bg-cover bg-center blur-2xl opacity-50 scale-125 transition-transform duration-500 group-hover:scale-[1.35]"
+                          style={{ backgroundImage: `url(${selectedProductImage})` }}
+                        />
+                        <img
+                          src={selectedProductImage}
+                          alt={p.name}
+                          className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-md"
+                        />
+                        {productImages.length > 1 && (
+                          <span className="absolute right-2 top-2 z-20 rounded-full bg-white/95 px-2 py-1 text-xs font-bold text-purple-700 shadow">
+                            {productImages.length} fotos
+                          </span>
+                        )}
+                      </button>
+
+                      {productImages.length > 1 && currentImageIndex > 0 && (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            selectProductImage(currentImageIndex - 1);
+                            event.currentTarget.blur();
+                          }}
+                          className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-100 shadow-lg transition-all hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-300 md:opacity-0 md:group-hover:opacity-100"
+                          aria-label={`Ver foto anterior de ${p.name}`}
+                          title="Foto anterior"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
                       )}
-                    </button>
+
+                      {productImages.length > 1 && currentImageIndex < productImages.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            selectProductImage(currentImageIndex + 1);
+                            event.currentTarget.blur();
+                          }}
+                          className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-purple-700 opacity-100 shadow-lg transition-all hover:bg-white hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-300 md:opacity-0 md:group-hover:opacity-100"
+                          aria-label={`Ver proxima foto de ${p.name}`}
+                          title="Proxima foto"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
                   )}
                   <div className="p-4">
                     <h3
