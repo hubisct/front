@@ -1,4 +1,4 @@
-import { useEffect, useState, type WheelEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -10,7 +10,7 @@ function clampZoom(value: number) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
 }
 
-function normalizeWheelDelta(event: WheelEvent<HTMLDivElement>) {
+function normalizeWheelDelta(event: WheelEvent) {
   if (event.deltaMode === 1) return event.deltaY * 16;
   if (event.deltaMode === 2) return event.deltaY * 120;
   return event.deltaY;
@@ -30,20 +30,13 @@ export function ProductImageLightbox({
   onClose: () => void;
 }) {
   const [zoom, setZoom] = useState(MIN_ZOOM);
+  const lightboxRef = useRef<HTMLDivElement>(null);
   const activeImage = images[activeIndex] || images[0];
 
   const goToImage = (index: number) => {
     const nextIndex = (index + images.length) % images.length;
     onSelect(nextIndex);
     setZoom(MIN_ZOOM);
-  };
-
-  const handleWheelZoom = (event: WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const delta = normalizeWheelDelta(event);
-    setZoom((currentZoom) => clampZoom(currentZoom - delta * WHEEL_ZOOM_STEP));
   };
 
   useEffect(() => {
@@ -57,10 +50,29 @@ export function ProductImageLightbox({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeIndex, images.length, onClose]);
 
+  useEffect(() => {
+    const handleWheelZoom = (event: WheelEvent) => {
+      const lightbox = lightboxRef.current;
+      const target = event.target instanceof Node ? event.target : null;
+      if (!lightbox || (target && !lightbox.contains(target))) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const delta = normalizeWheelDelta(event);
+      setZoom((currentZoom) => clampZoom(currentZoom - delta * WHEEL_ZOOM_STEP));
+    };
+
+    window.addEventListener("wheel", handleWheelZoom, { passive: false, capture: true });
+    return () => {
+      window.removeEventListener("wheel", handleWheelZoom, { capture: true });
+    };
+  }, []);
+
   if (!activeImage) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-3 sm:p-6">
+    <div ref={lightboxRef} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-3 sm:p-6">
       <button type="button" className="absolute inset-0 cursor-default" onClick={onClose} aria-label="Fechar zoom" />
 
       <div className="relative z-10 flex h-full w-full max-w-6xl flex-col">
@@ -86,7 +98,6 @@ export function ProductImageLightbox({
 
         <div
           className="relative min-h-0 flex-1 overflow-hidden rounded-xl bg-black/30"
-          onWheel={handleWheelZoom}
         >
           {images.length > 1 && (
             <>
