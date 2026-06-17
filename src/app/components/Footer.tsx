@@ -83,6 +83,7 @@ export function Footer() {
                 { label: "Início", href: "/#topo" },
                 { label: "Empreendimentos", href: "/#empreendimentos" },
                 { label: "Sobre a Incubadora", href: "/#sobre-incubadora" },
+                { label: "Política de Dados", href: "/politica-de-tratamento-de-dados" },
               ].map((item) => (
                 <li key={item.label}>
                   <a

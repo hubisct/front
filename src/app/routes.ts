@@ -6,6 +6,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { LoginPage } from "./pages/LoginPage";
 import { AdminPanel } from "./pages/AdminPanel";
 import { OwnerPanel } from "./pages/OwnerPanel";
+import { DataPolicyPage } from "./pages/DataPolicyPage";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       { index: true, Component: HomePage },
       { path: "empreendimento/:id", Component: EnterprisePage },
       { path: "login", Component: LoginPage },
+      { path: "politica-de-tratamento-de-dados", Component: DataPolicyPage },
       { path: "*", Component: NotFoundPage },
     ],
   },
