@@ -134,12 +134,13 @@ export function HomePage() {
               lineHeight: 1.7,
             }}
           >
-            Conheça produtos únicos feitos com criatividade, cuidado e propósito
-            pelos empreendedores incubados pela{" "}
+            Aqui você encontra produtos e serviços desenvolvidos por empreendimentos
+            sociais, solidários e comunitários apoiados pela{" "}
             <span className="text-yellow-300 font-bold">
-              Incubadora Social da UFSM
+              Incubadora Social da Universidade Federal de Santa Maria
             </span>
-            .
+            . Ao adquirir esses produtos, você fortalece iniciativas que promovem
+            geração de renda, inclusão e desenvolvimento local.
           </p>
 
           {/* Search Bar */}
@@ -374,6 +375,49 @@ export function HomePage() {
         )}
       </section>
 
+      {/* ── IMPACT SECTION ───────────────────────────────────────── */}
+      <section
+        className="py-16 relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FFF7ED 100%)" }}
+      >
+        <div className="absolute top-6 left-10 w-24 h-24 rounded-full opacity-20 blur-2xl"
+          style={{ background: "#FBBF24" }} />
+        <div className="absolute bottom-6 right-10 w-32 h-32 rounded-full opacity-20 blur-2xl"
+          style={{ background: "#EA580C" }} />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-1.5 mb-5">
+            <span className="text-xl">💛</span>
+            <span
+              className="text-orange-700 text-sm font-bold"
+              style={{ fontFamily: "Nunito, sans-serif" }}
+            >
+              Impacto Social
+            </span>
+          </div>
+          <h2
+            className="text-gray-900 mb-5"
+            style={{
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
+              lineHeight: 1.25,
+            }}
+          >
+            Mais do que uma vitrine, um espaço de{" "}
+            <span style={{ color: "#EA580C" }}>impacto social</span>
+          </h2>
+          <p
+            className="text-gray-600 leading-relaxed max-w-2xl mx-auto"
+            style={{ fontFamily: "Nunito, sans-serif", fontSize: "1.1rem", fontWeight: 600 }}
+          >
+            Cada empreendimento presente nesta plataforma representa uma história de
+            transformação. Ao divulgar, conhecer ou adquirir seus produtos, você contribui
+            para fortalecer iniciativas que promovem inclusão, geração de renda,
+            sustentabilidade e desenvolvimento local.
+          </p>
+        </div>
+      </section>
+
       {/* ── ABOUT SECTION ────────────────────────────────────────── */}
       <section id="sobre-incubadora" className="py-16 overflow-hidden relative"
         style={{ background: "linear-gradient(135deg, #F3F0FF 0%, #FFF7ED 50%, #EFF6FF 100%)" }}>
@@ -423,22 +467,31 @@ export function HomePage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="https://www.ufsm.br"
+                  href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-2xl text-white font-bold shadow-md hover:shadow-lg transition-all hover:scale-105"
                   style={{ background: "linear-gradient(135deg, #7C3AED, #EA580C)", fontFamily: "Nunito, sans-serif" }}
                 >
-                  Conheça a UFSM
+                  Conheça a Incubadora Social
                 </a>
                 <a
-                  href="https://wa.me/555532208500"
+                  href="https://wa.me/555591580632"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-2xl font-bold border-2 border-purple-600 text-purple-600 hover:bg-purple-50 transition-all"
                   style={{ fontFamily: "Nunito, sans-serif" }}
                 >
                   Entrar em contato
+                </a>
+                <a
+                  href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social/lab-commerce"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-2xl font-bold border-2 border-orange-500 text-orange-600 hover:bg-orange-50 transition-all"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  Lab Commerce
                 </a>
               </div>
             </div>
@@ -495,19 +548,20 @@ export function HomePage() {
               fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
             }}
           >
-            Quer fazer parte da{" "}
-            <span style={{ color: "#FBBF24" }}>Incubadora Social</span>?
+            Seu empreendimento também pode fazer parte da{" "}
+            <span style={{ color: "#FBBF24" }}>Incubadora Social</span>
           </h2>
           <p
             className="text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0"
             style={{ fontFamily: "Nunito, sans-serif", fontWeight: 600, fontSize: "1.05rem" }}
           >
-            Se você tem um empreendimento social, comunitário ou solidário e quer receber
-            apoio, capacitação e visibilidade, entre em contato com a equipe da Incubadora
-            Social da UFSM.
+            Se você desenvolve um empreendimento social, solidário ou comunitário e deseja
+            fortalecer seu negócio, ampliar sua divulgação, participar de capacitações e
+            receber acompanhamento técnico, a Incubadora Social pode ajudar você nessa
+            jornada. Entre em contato com nossa equipe para conhecer o processo de incubação.
           </p>
           <a
-            href="https://wa.me/555532208500"
+            href="https://wa.me/555591580632"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"

@@ -98,6 +98,32 @@ export function Footer() {
               ))}
               <li>
                 <a
+                  href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-orange-400 transition-colors text-sm font-semibold flex items-center gap-2 group"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
+                  Incubadora Social
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social/lab-commerce"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-orange-400 transition-colors text-sm font-semibold flex items-center gap-2 group"
+                  style={{ fontFamily: "Nunito, sans-serif" }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0" />
+                  Lab Commerce
+                  <ExternalLink className="w-3 h-3 opacity-60" />
+                </a>
+              </li>
+              <li>
+                <a
                   href="https://www.ufsm.br"
                   target="_blank"
                   rel="noopener noreferrer"

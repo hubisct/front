@@ -61,13 +61,13 @@ export function Header() {
               Empreendimentos
             </a>
             <a
-              href="https://www.ufsm.br"
+              href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social"
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-xl text-gray-600 hover:text-purple-700 hover:bg-purple-50 font-bold text-sm transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
-              UFSM
+              Incubadora Social
             </a>
 
             {user ? (
@@ -161,14 +161,14 @@ export function Header() {
               🏪 Empreendimentos
             </Link>
             <a
-              href="https://www.ufsm.br"
+              href="https://www.ufsm.br/pro-reitorias/pre/incubadora-social"
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2.5 rounded-xl text-gray-700 hover:bg-purple-50 hover:text-purple-700 font-bold text-sm transition-colors"
               style={{ fontFamily: "Nunito, sans-serif" }}
               onClick={() => setMenuOpen(false)}
             >
-              🎓 UFSM
+              🎓 Incubadora Social
             </a>
 
             {user ? (
