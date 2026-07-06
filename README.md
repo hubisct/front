@@ -37,6 +37,5 @@ npm run build
   - `src/styles/`: Arquivos de estilo globais (CSS/Tailwind).
 
 ### Auxiliares:
-- `cypress/`: Configurações e testes end-to-end com Cypress.
 - `dist/`: Pasta gerada automaticamente contendo o build de produção (após rodar `npm run build`).
-- Arquivos de configuração: `vite.config.ts`, `cypress.config.js`, `package.json`, etc.
+- Arquivos de configuração: `vite.config.ts`, `package.json`, etc.
