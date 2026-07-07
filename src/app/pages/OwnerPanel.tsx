@@ -691,14 +691,14 @@ export function OwnerPanel() {
     };
     const res = await addProduct(e.id, newProduct);
     if (!res) throw new Error("Failed");
-    setShowAddProduct(false);
+    setTimeout(() => setShowAddProduct(false), 1200);
   };
 
   const handleEditProduct = async (data: Partial<Product>) => {
     if (!editProductData) throw new Error("Failed");
     const res = await updateProduct(e.id, editProductData.id, data);
     if (!res) throw new Error("Failed");
-    setEditProductData(null);
+    setTimeout(() => setEditProductData(null), 1200);
   };
 
   return (
